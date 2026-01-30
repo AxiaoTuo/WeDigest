@@ -13,6 +13,7 @@ services:
 
       # NextAuth (必须修改)
       - AUTH_SECRET=${AUTH_SECRET}
+      - AUTH_TRUST_HOST=true
       - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
 
       # API Key 加密密钥 (必须修改)
