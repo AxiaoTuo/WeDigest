@@ -15,8 +15,8 @@ COPY package*.json ./
 # 先复制 Prisma schema (postinstall 需要它)
 COPY prisma ./prisma/
 
-# 安装依赖 (prisma generate 在 postinstall 中执行)
-RUN npm ci
+# 安装依赖 (跳过 Puppeteer Chrome 下载，项目使用 @sparticuz/chromium)
+RUN PUPPETEER_SKIP_DOWNLOAD=true npm ci
 
 # 复制剩余项目文件
 COPY . .
