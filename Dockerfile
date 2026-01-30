@@ -10,10 +10,13 @@ WORKDIR /app
 # 复制 package 文件
 COPY package*.json ./
 
-# 安装依赖
+# 先复制 Prisma schema (postinstall 需要它)
+COPY prisma ./prisma/
+
+# 安装依赖 (prisma generate 在 postinstall 中执行)
 RUN npm ci
 
-# 复制项目文件
+# 复制剩余项目文件
 COPY . .
 
 # 生成 Prisma Client
