@@ -1,8 +1,10 @@
 # 使用 Node.js 20 Alpine 作为基础镜像
 FROM node:20-alpine
 
-# 安装 Python 和构建工具 (better-sqlite3 需要)
-RUN apk add --no-cache python3 make g++
+# 安装构建工具和 OpenSSL 兼容库
+RUN apk add --no-cache python3 make g++ openssl-dev openssl3-libs && \
+    ln -s /usr/lib/libssl.so.3 /usr/lib/libssl.so && \
+    ln -s /usr/lib/libcrypto.so.3 /usr/lib/libcrypto.so
 
 # 设置工作目录
 WORKDIR /app
@@ -18,6 +20,9 @@ RUN npm ci
 
 # 复制剩余项目文件
 COPY . .
+
+# 重新编译 better-sqlite3 以兼容 Alpine
+RUN npm rebuild better-sqlite3
 
 # 生成 Prisma Client
 RUN npx prisma generate
