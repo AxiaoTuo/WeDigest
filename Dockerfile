@@ -1,10 +1,24 @@
 # 使用 Node.js 20 Alpine 作为基础镜像
 FROM node:20-alpine
 
-# 安装构建工具和 OpenSSL 兼容库
-RUN apk add --no-cache python3 make g++ openssl-dev openssl && \
+# 安装构建工具、OpenSSL 和 Chromium 运行依赖
+RUN apk add --no-cache \
+    python3 make g++ openssl-dev openssl \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    wqy-zenhei \
+    && \
     ln -s /lib/libssl.so.3 /lib/libssl.so && \
     ln -s /lib/libcrypto.so.3 /lib/libcrypto.so || true
+
+# 设置 Chromium 环境变量 - 使用系统 Chromium
+ENV CHROMIUM_PATH=/usr/bin/chromium-browser
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 # 设置工作目录
 WORKDIR /app

@@ -11,9 +11,23 @@ async function getBrowser(): Promise<Browser> {
     const puppeteer = await import('puppeteer-core')
     const chromium = await import('@sparticuz/chromium')
 
+    // 优先使用环境变量指定的 Chromium (Docker 环境)
+    const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH ||
+                           process.env.CHROMIUM_PATH ||
+                           await chromium.default.executablePath()
+
     browserInstance = await puppeteer.default.launch({
-      args: chromium.default.args,
-      executablePath: await chromium.default.executablePath(),
+      args: [
+        ...chromium.default.args,
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--no-first-run',
+        '--no-zygote',
+        '--disable-gpu'
+      ],
+      executablePath,
       headless: true
     })
   } else {
