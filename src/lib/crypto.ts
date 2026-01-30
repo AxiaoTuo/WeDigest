@@ -26,20 +26,15 @@ export function encrypt(text: string): string {
   return Buffer.concat([iv, tag, encrypted]).toString('base64')
 }
 
-export function decrypt(encryptedText: string): string | null {
-  try {
-    const buffer = Buffer.from(encryptedText, 'base64')
+export function decrypt(encryptedText: string): string {
+  const buffer = Buffer.from(encryptedText, 'base64')
 
-    const iv = buffer.subarray(0, IV_LENGTH)
-    const tag = buffer.subarray(IV_LENGTH, IV_LENGTH + TAG_LENGTH)
-    const encrypted = buffer.subarray(IV_LENGTH + TAG_LENGTH)
+  const iv = buffer.subarray(0, IV_LENGTH)
+  const tag = buffer.subarray(IV_LENGTH, IV_LENGTH + TAG_LENGTH)
+  const encrypted = buffer.subarray(IV_LENGTH + TAG_LENGTH)
 
-    const decipher = crypto.createDecipheriv(ALGORITHM, getKey(), iv)
-    decipher.setAuthTag(tag)
+  const decipher = crypto.createDecipheriv(ALGORITHM, getKey(), iv)
+  decipher.setAuthTag(tag)
 
-    return decipher.update(encrypted).toString('utf8') + decipher.final('utf8')
-  } catch (error) {
-    console.error('Decryption failed:', error instanceof Error ? error.message : error)
-    return null
-  }
+  return decipher.update(encrypted) + decipher.final('utf8')
 }

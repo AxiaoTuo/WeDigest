@@ -31,8 +31,12 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env
-.env*.local
+.env*
+
+# database
+*.db
+*.db-shm
+*.db-wal
 
 # vercel
 .vercel
@@ -40,39 +44,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# database
-*.db
-*.db-journal
-prisma/*.db
-
-# claude code skills
-.claude/
-
-# temporary files
-*.tmp
-*.temp
-nul
-*.html
-!public/**/*.html
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# IDE
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.swp
-*.swo
-*~
-
-# logs
-logs
-*.log

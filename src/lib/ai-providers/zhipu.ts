@@ -27,7 +27,7 @@ export class ZhipuProvider extends BaseAIProvider {
       messages: [
         {
           role: 'system',
-          content: '你是一个专业的内容分析助手，擅长总结文章要点。请始终返回有效的JSON格式。'
+          content: '你是一名专业的技术架构师和研究员，擅长生成深度研报级的学习笔记。请严格按照用户要求的Markdown格式输出，必须在文档开头生成YAML Front Matter元数据（包含aliases、date、tags、author）。'
         },
         { role: 'user', content: prompt }
       ],

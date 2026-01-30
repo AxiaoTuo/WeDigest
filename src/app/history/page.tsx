@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
-import { ArrowLeft, Home, Trash2, Eye, Loader2 } from 'lucide-react'
+import { BookOpen, Home, Trash2, Eye, Loader2, Sparkles, Clock, FileText } from 'lucide-react'
 import { HistoryItem } from '@/types/api'
 
 export default function HistoryPage() {
@@ -57,99 +57,178 @@ export default function HistoryPage() {
 
   const totalPages = Math.ceil(total / limit)
 
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr)
+    const now = new Date()
+    const diff = now.getTime() - date.getTime()
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+
+    if (days === 0) return '今天'
+    if (days === 1) return '昨天'
+    if (days < 7) return `${days}天前`
+    return date.toLocaleDateString('zh-CN')
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <nav className="border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Button variant="ghost" onClick={() => router.push('/')}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            返回首页
-          </Button>
-          <h1 className="text-xl font-bold">历史记录</h1>
-          <div className="w-24" />
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-indigo-50">
+      <nav className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto flex items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push('/')}>
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
+              <BookOpen className="h-5 w-5 text-white" />
+            </div>
+            <h1 className="text-xl font-bold text-slate-900">WeDigest</h1>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={() => router.push('/app')} className="text-slate-700 hover:text-slate-900">
+              <FileText className="mr-2 h-4 w-4" />
+              开始使用
+            </Button>
+            <Button variant="ghost" onClick={() => router.push('/settings')} className="text-slate-700 hover:text-slate-900">
+              设置
+            </Button>
+          </div>
         </div>
       </nav>
 
-      <main className="container mx-auto max-w-4xl px-4 py-8">
+      <main className="container mx-auto max-w-6xl px-6 py-12">
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+                <Clock className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold text-slate-900">历史记录</h2>
+                <p className="text-slate-600">查看您的所有深度研报</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-700 text-sm font-medium">
+              <Sparkles className="h-4 w-4" />
+              <span>共 {total} 条记录</span>
+            </div>
+          </div>
+        </div>
+
         {loading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+          <div className="flex justify-center py-20">
+            <div className="text-center">
+              <Loader2 className="h-12 w-12 animate-spin text-indigo-600 mx-auto mb-4" />
+              <p className="text-slate-600">加载中...</p>
+            </div>
           </div>
         ) : items.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center text-gray-500">
-              <p>暂无历史记录</p>
-              <Button variant="outline" className="mt-4" onClick={() => router.push('/')}>
+          <Card className="max-w-lg mx-auto border-2 border-dashed border-slate-300">
+            <CardContent className="py-16 text-center">
+              <div className="flex justify-center mb-4">
+                <div className="h-16 w-16 rounded-full bg-indigo-50 flex items-center justify-center">
+                  <FileText className="h-8 w-8 text-indigo-600" />
+                </div>
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">暂无历史记录</h3>
+              <p className="text-slate-600 mb-6">开始生成您的第一个深度研报吧</p>
+              <Button 
+                onClick={() => router.push('/app')} 
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all"
+              >
                 <Home className="mr-2 h-4 w-4" />
-                去首页生成摘要
+                开始使用
               </Button>
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-4">
-            {items.map((item) => (
-              <Card key={item.id} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg line-clamp-2">{item.articleTitle}</CardTitle>
-                    <div className="flex gap-2 ml-4 shrink-0">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => router.push(`/result?id=${item.id}`)}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-red-600 hover:text-red-700"
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+          <>
+            <div className="grid md:grid-cols-2 gap-4 mb-8">
+              {items.map((item) => (
+                <Card key={item.id} className="border-slate-200 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer group">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <CardTitle className="text-lg font-semibold text-slate-900 line-clamp-2 mb-2 group-hover:text-indigo-600 transition-colors">
+                          {item.articleTitle}
+                        </CardTitle>
+                        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
+                          {item.articleAuthor && (
+                            <span className="flex items-center gap-1">
+                              <FileText className="h-3 w-3" />
+                              {item.articleAuthor}
+                            </span>
+                          )}
+                          <span className="flex items-center gap-1">
+                            <Sparkles className="h-3 w-3" />
+                            {item.provider.toUpperCase()}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {formatDate(item.createdAt)}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 shrink-0">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-300"
+                          onClick={() => router.push(`/result?id=${item.id}`)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-300"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    {item.keywords.map((keyword) => (
-                      <Badge key={keyword} variant="secondary" className="text-xs">
-                        {keyword}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    {item.articleAuthor && <span>作者: {item.articleAuthor}</span>}
-                    <span>AI: {item.provider.toUpperCase()}</span>
-                    <span>{new Date(item.createdAt).toLocaleString()}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2">
+                      {item.keywords.slice(0, 5).map((keyword) => (
+                        <Badge key={keyword} variant="secondary" className="text-xs bg-indigo-50 text-indigo-700 hover:bg-indigo-100">
+                          {keyword}
+                        </Badge>
+                      ))}
+                      {item.keywords.length > 5 && (
+                        <Badge variant="secondary" className="text-xs bg-slate-100 text-slate-700">
+                          +{item.keywords.length - 5}
+                        </Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
             {totalPages > 1 && (
-              <div className="flex justify-center gap-2 pt-4">
+              <div className="flex justify-center items-center gap-4 pt-8">
                 <Button
                   variant="outline"
                   disabled={page === 1}
                   onClick={() => setPage(p => p - 1)}
+                  className="w-24"
                 >
                   上一页
                 </Button>
-                <span className="flex items-center px-4">
-                  {page} / {totalPages}
-                </span>
+                <div className="flex items-center gap-2 px-6 py-2 rounded-lg bg-slate-100">
+                  <span className="text-sm text-slate-600">第</span>
+                  <span className="text-lg font-semibold text-slate-900">{page}</span>
+                  <span className="text-sm text-slate-600">/ {totalPages}</span>
+                  <span className="text-sm text-slate-600">页</span>
+                </div>
                 <Button
                   variant="outline"
                   disabled={page >= totalPages}
                   onClick={() => setPage(p => p + 1)}
+                  className="w-24"
                 >
                   下一页
                 </Button>
               </div>
             )}
-          </div>
+          </>
         )}
       </main>
     </div>

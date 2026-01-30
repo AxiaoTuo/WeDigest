@@ -26,8 +26,6 @@ db.exec(`
     "userId" TEXT NOT NULL,
     "provider" TEXT NOT NULL,
     "encryptedKey" TEXT NOT NULL,
-    "baseUrl" TEXT,
-    "modelName" TEXT,
     "isActive" BOOLEAN NOT NULL DEFAULT 1,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,

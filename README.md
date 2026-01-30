@@ -8,17 +8,7 @@
 [![Prisma](https://img.shields.io/badge/Prisma-5.x-2D3748)](https://www.prisma.io/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## 项目简介
-
-WeDigest 是一个基于 AI 的智能学习笔记生成工具，专门用于将微信公众号文章转化为结构清晰、易于理解和记忆的学习笔记。不同于简单的文章摘要，WeDigest 生成的笔记包含：
-
-- **核心观点** - 提炼文章最重要的思想
-- **详细要点** - 展开各个主要部分
-- **概念解释** - 提供背景信息和概念说明
-- **思考启发** - 提炼文章中的思考和感悟
-- **实践建议** - 给出可操作的行动建议
-
-支持多种 AI 模型（OpenAI、DeepSeek、智谱AI），数据加密存储，多用户隔离。
+使用 AI 自动将微信公众号文章转化为结构清晰、易于阅读和整理的学习笔记，支持多种 AI 模型（OpenAI、DeepSeek、智谱AI）。
 
 ## ✨ 功能特性
 
@@ -30,8 +20,8 @@ WeDigest 是一个基于 AI 的智能学习笔记生成工具，专门用于将�
 - **自定义 AI 配置** - 支持自定义 API 地址和模型名称
 - **历史记录管理** - 自动保存所有生成的笔记，支持查看和管理
 - **Markdown 导出** - 导出为 Markdown 格式，便于复制到笔记工具
-- **安全认证** - NextAuth.js 身份验证，多用户数据隔离
-- **API Key 加密** - AES-256-GCM 加密存储 API 密钥
+- **安全认证** - NextAuth.js 身份验证，多用户隔离
+- **API Key 加密** - AES 加密存储敏感信息，保护用户数据
 
 ### 📚 学习笔记特性
 
@@ -54,7 +44,7 @@ WeDigest 是一个基于 AI 的智能学习笔记生成工具，专门用于将�
 - **API Key 加密** - AES-256-GCM 加密存储 API 密钥
 - **密码哈希** - bcryptjs 密码加密
 - **数据隔离** - 每个用户的数据完全隔离
-- **错误处理** - 完善的错误处理和降级机制
+- **HTTPS 支持** - 生产环境强制 HTTPS
 
 ## 🛠️ 技术栈
 
@@ -113,30 +103,26 @@ npm install
 DATABASE_URL="file:./dev.db"
 
 # NextAuth 密钥（生产环境必须更换）
-AUTH_SECRET="wedigest-secret-key-please-change-in-production-use-openssl-rand-base64-32"
+AUTH_SECRET="your-secret-key-change-in-production"
 
-# API Key 加密密钥 (32字节十六进制字符串)
-ENCRYPTION_KEY="a1b2c3d4e5f67890abcdef1234567890"
+# API Key 加密密钥 (任意字符串)
+ENCRYPTION_KEY="your-encryption-key-change-in-production"
 
 # AI Provider API Keys (可选，用户也可以在界面配置)
 OPENAI_API_KEY=""
 OPENAI_BASE_URL=""
-
-# DeepSeek (推荐)
 DEEPSEEK_API_KEY=""
 DEEPSEEK_BASE_URL="https://api.deepseek.com"
-
-# 智谱AI
 ZHIPU_API_KEY=""
 
-# 默认 AI 供应商 (openai | deepseek | zhipu)
+# 默认 AI 供应商
 DEFAULT_AI_PROVIDER="deepseek"
 ```
 
 #### 4. 初始化数据库
 
 ```bash
-npm run db:setup
+npm run db:init
 ```
 
 #### 5. 启动开发服务器
@@ -262,15 +248,13 @@ wedigest/
 ├── src/
 │   ├── app/              # Next.js App Router
 │   │   ├── api/        # API Routes
-│   │   │   ├── auth/[...nextauth]/  # NextAuth 认证
-│   │   │   ├── register/            # 用户注册
-│   │   │   ├── fetch/               # 文章抓取
-│   │   │   ├── summarize/           # AI 笔记生成
-│   │   │   ├── history/             # 历史记录
-│   │   │   ├── settings/            # 设置管理
-│   │   │   │   ├── api-key/        # API Key 管理
-│   │   │   │   └── test-api/       # API 测试接口
-│   │   │   └── export/              # 导出功能
+│   │   │   ├── auth/           # NextAuth 认证
+│   │   │   ├── fetch/          # 文章抓取
+│   │   │   ├── summarize/      # AI 笔记生成
+│   │   │   ├── history/       # 历史记录
+│   │   │   ├── settings/       # 设置管理
+│   │   │   │   └── test-api/ # API 测试接口
+│   │   │   └── export/        # 导出功能
 │   │   ├── history/     # 历史记录页面
 │   │   ├── login/       # 登录/注册页面
 │   │   ├── result/      # 笔记结果页面
@@ -305,16 +289,9 @@ wedigest/
 │       └── next-auth.d.ts
 ├── .env                 # 环境变量
 ├── .env.example         # 环境变量示例
-├── init-db.js           # 数据库初始化脚本
-├── next.config.ts       # Next.js 配置
-├── tsconfig.json        # TypeScript 配置
-├── components.json      # shadcn/ui 配置
 ├── AGENTS.md            # 代理编码指南
 ├── API_BYPASS.md        # API 防护绕过说明
-├── API_TROUBLESHOOTING.md # API 连接问题排查
 ├── NOTE_FEATURE.md      # 学习笔记功能说明
-├── QUICKSTART.md        # 快速开始指南
-├── WINDOWS_FIX_SUMMARY.md # Windows 兼容性修复
 └── README.md            # 项目说明
 ```
 
@@ -323,17 +300,13 @@ wedigest/
 ### 可用命令
 
 ```bash
-# 初始化数据库（包含 Prisma Client 生成和表创建）
-npm run db:setup
+# 初始化数据库
+npm run db:init
 
 # 生成 Prisma Client
-npm run db:generate
-# 或
 npx prisma generate
 
 # 推送数据库结构
-npm run db:push
-# 或
 npx prisma db push
 
 # 重新编译 better-sqlite3 (Windows 上遇到问题)
@@ -348,17 +321,14 @@ npm run db:check
 
 ### 数据模型
 
-- **User** - 用户信息（id, email, name, password, image, createdAt, updatedAt）
-- **ApiKey** - 加密存储的 API 密钥（id, userId, provider, encryptedKey, baseUrl, modelName, isActive, createdAt, updatedAt）
-- **Summary** - 学习笔记历史记录（id, userId, articleUrl, articleTitle, articleAuthor, originalContent, summary, markdown, keywords, provider, createdAt）
+- **User** - 用户信息
+- **ApiKey** - 加密存储的 API 密钥（包含自定义配置）
+- **Summary** - 学习笔记历史记录
 
 ## 🔌 API 端点
 
 ### 认证
 - `GET/POST /api/auth/[...nextauth]` - NextAuth.js 认证
-- `GET /api/auth/session` - 获取当前会话
-- `GET /api/auth/providers` - 获取可用的认证提供者
-- `GET /api/auth/error` - 认证错误处理
 - `POST /api/register` - 用户注册
 
 ### 文章处理
@@ -366,19 +336,18 @@ npm run db:check
 - `POST /api/summarize` - 生成 AI 学习笔记
 
 ### 历史记录
-- `GET /api/history` - 获取历史记录列表
-- `GET /api/history/[id]` - 获取单条记录详情
+- `GET /api/history` - 获取历史记录
+- `GET /api/history/[id]` - 获取单条记录
 - `DELETE /api/history/[id]` - 删除记录
 
 ### 设置
 - `GET /api/settings/api-key` - 获取 API Keys
-- `GET /api/settings/api-key?provider=deepseek` - 获取指定 Provider 的 API Key
 - `POST /api/settings/api-key` - 保存 API Key
-- `DELETE /api/settings/api-key?provider=deepseek` - 删除 API Key
+- `DELETE /api/settings/api-key` - 删除 API Key
 - `POST /api/settings/test-api` - 测试 API 连接
 
 ### 导出
-- `GET /api/export?id=xxx` - 导出学习笔记为 Markdown
+- `GET /api/export` - 导出学习笔记为 Markdown
 
 ## 🚢 部署
 
@@ -396,19 +365,18 @@ npm start
 
 ### 部署平台建议
 
-#### Vercel
+#### Vercel (推荐)
 - 零配置部署
 - 自动 HTTPS
 - 全球 CDN
-- **注意**: 由于需要 SQLite 持久化存储，需要额外配置
+- 注意：需要配置环境变量
 
 #### Railway
 - 支持 SQLite
 - 自动持久化存储
 - 简单易用
-- **推荐**
 
-#### VPS / 自建
+#### VPS / 自建 (最灵活)
 - 完全控制
 - 可使用任意数据库
 - 适合高并发场景
@@ -417,7 +385,7 @@ npm start
 
 1. **更换密钥**
    - `AUTH_SECRET` - 使用 `openssl rand -base64 32` 生成
-   - `ENCRYPTION_KEY` - 使用强随机字符串（32字节十六进制）
+   - `ENCRYPTION_KEY` - 使用强随机字符串
 
 2. **配置数据库**
    - 生产环境建议使用 PostgreSQL 或 MySQL
@@ -441,8 +409,6 @@ npm start
 npm run dev
 ```
 
-访问 [http://localhost:3000](http://localhost:3000)
-
 ### 代码检查
 
 ```bash
@@ -456,7 +422,7 @@ npm run lint
 3. 继承 `BaseAIProvider` 抽象类
 4. 实现 `summarize` 方法
 5. 在 `src/lib/ai-providers/index.ts` 中注册供应商
-6. 在 `src/app/settings/page.tsx` 中添加 UI 选项
+6. 在 `src/app/page.tsx` 中添加 UI 选项
 
 ### 修改笔记提示词
 
@@ -469,20 +435,17 @@ npm run lint
 
 ### 1. 数据库初始化失败
 
-**问题：** Windows 上 Prisma 引擎报错或 better-sqlite3 编译失败
+**问题：** Windows 上 Prisma 引擎报错
 
 **解决方案：**
 ```bash
-# 重新编译 better-sqlite3
-npm run db:rebuild
-
-# 然后运行初始化
-npm run db:setup
+npm run db:init
 ```
 
-**如果仍然失败：**
-- 安装 Visual C++ Redistributable: https://aka.ms/vs/17/release/vc_redist.x64.exe
-- 确保已安装 Python 3.6+（Windows 编译 native 模块需要）
+如果仍然失败：
+```bash
+npm run db:rebuild
+```
 
 ### 2. Puppeteer 抓取失败
 
@@ -491,7 +454,7 @@ npm run db:setup
 **解决方案：**
 - 确保已安装完整依赖：`npm install puppeteer`
 - 检查网络连接
-- 查看浏览器控制台错误信息
+- 使用备用抓取方式
 
 ### 3. AI API 调用失败
 
@@ -501,51 +464,32 @@ npm run db:setup
 - 检查 API Key 配置是否正确
 - 确认 API 地址和模型名称
 - 尝试使用官方 API（第三方服务可能有防护）
-- 查看控制台日志了解详细错误信息
+- 查看 `API_BYPASS.md` 了解防护绕过方案
 
-### 4. API Key 解密失败
+### 4. Windows 上编译失败
 
-**问题：** 设置页面显示"Key corrupted"或无法加载已保存的 API Key
-
-**解决方案：**
-- 这通常发生在 `ENCRYPTION_KEY` 更改后
-- 重新保存 API Key 即可解决
-- 生产环境中请勿随意更改 `ENCRYPTION_KEY`
-
-### 5. Turbopack 错误
-
-**问题：** 开发服务器启动时出现 Turbopack panic 错误
+**问题：** better-sqlite3 编译失败
 
 **解决方案：**
-- 项目已禁用 Turbopack，使用标准 Webpack
-- 确保运行的是 `npm run dev` 而不是 `next dev --turbopack`
-- 如果问题持续，删除 `.next` 目录后重新启动
+- 安装 Visual C++ Redistributable: https://aka.ms/vs/17/release/vc_redist.x64.exe
+- 运行 `npm run db:rebuild` 重新编译
 
-### 6. 控制台输入警告
+### 5. 学习笔记格式不正确
 
-**问题：** React 警告 "A component is changing a controlled input to be uncontrolled"
+**问题：** AI 返回的内容格式不符合预期
 
 **解决方案：**
-- 已修复，确保使用最新代码
-- 清除浏览器缓存后重试
-
-## 🔧 近期更新
-
-### v0.1.0 (最新)
-
-- ✅ 修复 NextAuth v5 客户端获取错误（添加 trustHost 配置）
-- ✅ 修复 TypeScript 类型检查错误（API Key 解密 null 处理）
-- ✅ 修复 bcryptjs 类型定义问题（添加 types 配置）
-- ✅ 移除过时的 Turbopack 配置
-- ✅ 创建 MIT 开源协议文件
-- ✅ 优化项目文档结构
+- 查看终端日志确认实际请求内容
+- 尝试不同的 AI 模型
+- 调整笔记风格（简洁版/详细版/要点版）
 
 ## 📚 相关文档
 
-- [AGENTS.md](AGENTS.md) - 代理编码指南（供 AI 助手使用）
-- [docs/WINDOWS_TROUBLESHOOTING.md](docs/WINDOWS_TROUBLESHOOTING.md) - Windows 故障排除
+- [AGENTS.md](AGENTS.md) - 代理编码指南
+- [QUICKSTART.md](QUICKSTART.md) - 快速开始指南
 - [API_BYPASS.md](API_BYPASS.md) - API 防护绕过说明
 - [API_TROUBLESHOOTING.md](API_TROUBLESHOOTING.md) - API 连接问题排查
+- [NOTE_FEATURE.md](NOTE_FEATURE.md) - 学习笔记功能说明
 
 ## 🤝 贡献指南
 
@@ -584,21 +528,6 @@ npm run db:setup
 - 问题反馈：提交 [Issue](https://github.com/your-username/wedigest/issues)
 - 功能建议：提交 [Feature Request](https://github.com/your-username/wedigest/issues)
 
-## 📜 许可声明
-
-**注意：** 本项目仅供学习和个人使用，请勿用于商业用途。使用本工具抓取和总结文章时，请遵守相关法律法规和服务条款。
-
-- 微信公众号文章版权归原作者所有
-- 生成的学习笔记仅供个人学习使用
-- 请勿将本工具用于大规模爬取或商业用途
-- 使用本工具产生的任何后果由使用者自行承担
-
 ---
 
-<div align="center">
-
-**如果这个项目对你有帮助，请给个 ⭐️ Star**
-
-Made with ❤️ by WeDigest Team
-
-</div>
+**注意：** 本项目仅供学习和个人使用，请勿用于商业用途。使用本工具抓取和总结文章时，请遵守相关法律法规和服务条款。

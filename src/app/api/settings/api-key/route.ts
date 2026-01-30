@@ -99,33 +99,15 @@ export async function GET(request: NextRequest) {
         })
       }
 
-      const decryptedKey = decrypt(key.encryptedKey)
-
-      // If decryption failed, return partial data without the key
-      if (!decryptedKey) {
-        return NextResponse.json({
-          success: true,
-          data: {
-            provider: key.provider,
-            isActive: key.isActive,
-            baseUrl: key.baseUrl,
-            modelName: key.modelName,
-            createdAt: key.createdAt.toISOString(),
-            decryptedKey: null,
-            keyCorrupted: true
-          }
-        })
-      }
-
       return NextResponse.json({
         success: true,
         data: {
           provider: key.provider,
           isActive: key.isActive,
-          baseUrl: key.baseUrl || '',
-          modelName: key.modelName || '',
+          baseUrl: key.baseUrl,
+          modelName: key.modelName,
           createdAt: key.createdAt.toISOString(),
-          decryptedKey
+          decryptedKey: decrypt(key.encryptedKey)
         }
       })
     }

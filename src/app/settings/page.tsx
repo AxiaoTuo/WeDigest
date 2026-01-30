@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
-import { ArrowLeft, Save, Eye, EyeOff, Trash2, Check } from 'lucide-react'
+import { BookOpen, Save, Eye, EyeOff, Trash2, Settings as SettingsIcon, Sparkles, ExternalLink, Key, CheckCircle2, AlertCircle } from 'lucide-react'
 import { AIProviderType } from '@/types/ai-provider'
 
 interface ApiKeyStatus {
@@ -30,6 +30,30 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [apiKeys, setApiKeys] = useState<ApiKeyStatus[]>([])
 
+  const providers = [
+    {
+      id: 'deepseek' as AIProviderType,
+      name: 'DeepSeek',
+      url: 'https://platform.deepseek.com',
+      placeholder: 'sk-...',
+      defaultModel: 'deepseek-chat'
+    },
+    {
+      id: 'openai' as AIProviderType,
+      name: 'OpenAI',
+      url: 'https://platform.openai.com/api-keys',
+      placeholder: 'sk-...',
+      defaultModel: 'gpt-4o-mini'
+    },
+    {
+      id: 'zhipu' as AIProviderType,
+      name: '智谱AI',
+      url: 'https://open.bigmodel.cn',
+      placeholder: '...',
+      defaultModel: 'glm-4-flash'
+    }
+  ]
+
   const fetchApiKeys = async () => {
     try {
       const res = await fetch('/api/settings/api-key')
@@ -47,8 +71,7 @@ export default function SettingsPage() {
       const res = await fetch(`/api/settings/api-key?provider=${provider}`)
       const data = await res.json()
       if (data.success && data.data) {
-        // Ensure all values are strings, never null/undefined
-        setApiKey(data.data.decryptedKey || '')
+        setApiKey(data.data.decryptedKey)
         setBaseUrl(data.data.baseUrl || '')
         setModelName(data.data.modelName || '')
       } else {
@@ -100,7 +123,6 @@ export default function SettingsPage() {
 
   const handleDelete = async (provider: string) => {
     if (!confirm(`确定要删除 ${provider.toUpperCase()} 的 API Key 吗？`)) return
-
     try {
       const res = await fetch(`/api/settings/api-key?provider=${provider}`, {
         method: 'DELETE'
@@ -152,272 +174,206 @@ export default function SettingsPage() {
     apiKeys.some((k) => k.provider === provider && k.isActive)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <nav className="border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Button variant="ghost" onClick={() => router.push('/')}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            返回首页
-          </Button>
-          <h1 className="text-xl font-bold">设置</h1>
-          <div className="w-24" />
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-indigo-50">
+      <nav className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto flex items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push('/')}>
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
+              <BookOpen className="h-5 w-5 text-white" />
+            </div>
+            <h1 className="text-xl font-bold text-slate-900">WeDigest</h1>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={() => router.push('/app')} className="text-slate-700 hover:text-slate-900">
+              开始使用
+            </Button>
+            <Button variant="ghost" onClick={() => router.push('/history')} className="text-slate-700 hover:text-slate-900">
+              历史记录
+            </Button>
+          </div>
         </div>
       </nav>
 
-      <main className="container mx-auto max-w-3xl px-4 py-8">
-        <Card>
+      <main className="container mx-auto max-w-4xl px-6 py-12">
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+              <SettingsIcon className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold text-slate-900">API 配置</h2>
+              <p className="text-slate-600">配置您的 AI API Key，数据加密存储</p>
+            </div>
+          </div>
+        </div>
+
+        <Card className="border-2 border-slate-200 shadow-xl mb-8">
           <CardHeader>
-            <CardTitle>AI API Key 配置</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Key className="h-5 w-5 text-indigo-600" />
+              AI API Key 配置
+            </CardTitle>
             <CardDescription>
-              配置 AI 供应商的 API Key，数据加密存储在数据库中
+              配置 AI 供应商的 API Key，所有数据加密存储在本地数据库中
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs value={activeProvider} onValueChange={(v) => setActiveProvider(v as AIProviderType)}>
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="deepseek" className="relative">
-                  DeepSeek
-                  {hasKey('deepseek') && (
-                    <Check className="absolute top-1 right-1 h-3 w-3 text-green-600" />
-                  )}
-                </TabsTrigger>
-                <TabsTrigger value="openai" className="relative">
-                  OpenAI
-                  {hasKey('openai') && (
-                    <Check className="absolute top-1 right-1 h-3 w-3 text-green-600" />
-                  )}
-                </TabsTrigger>
-                <TabsTrigger value="zhipu" className="relative">
-                  智谱AI
-                  {hasKey('zhipu') && (
-                    <Check className="absolute top-1 right-1 h-3 w-3 text-green-600" />
-                  )}
-                </TabsTrigger>
+            <Tabs value={activeProvider} onValueChange={(v) => setActiveProvider(v as AIProviderType)} className="w-full">
+              <TabsList className="grid w-full grid-cols-3 bg-slate-100">
+                {providers.map((provider) => (
+                  <TabsTrigger 
+                    key={provider.id} 
+                    value={provider.id} 
+                    className="relative data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                  >
+                    {provider.name}
+                    {hasKey(provider.id) && (
+                      <CheckCircle2 className="absolute top-1 right-1 h-3 w-3 text-green-600" />
+                    )}
+                  </TabsTrigger>
+                ))}
               </TabsList>
 
-              <TabsContent value="deepseek" className="space-y-4 pt-4">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
-                  <p className="font-medium mb-1">DeepSeek API Key 获取</p>
-                  <p className="text-gray-600">访问 <a href="https://platform.deepseek.com" target="_blank" className="text-blue-600 underline">platform.deepseek.com</a> 注册并获取 API Key</p>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="deepseek-key">API Key</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="deepseek-key"
-                      type={showKey ? 'text' : 'password'}
-                      placeholder="sk-..."
-                      value={apiKey ?? ''}
-                      onChange={(e) => setApiKey(e.target.value)}
-                    />
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setShowKey(!showKey)}
-                    >
-                      {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
+              {providers.map((provider) => (
+                <TabsContent key={provider.id} value={provider.id} className="space-y-6 pt-6">
+                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-4">
+                    <div className="flex items-start gap-3">
+                      <Sparkles className="h-5 w-5 text-indigo-600 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="font-medium text-slate-900 mb-1">{provider.name} API Key 获取</p>
+                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                          <span>访问</span>
+                          <a 
+                            href={provider.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-indigo-600 hover:text-indigo-700 underline font-medium flex items-center gap-1"
+                          >
+                            {provider.url}
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                          <span>注册并获取</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="deepseek-url">API 地址（可选）</Label>
-                  <Input
-                    id="deepseek-url"
-                    type="text"
-                    placeholder="https://api.deepseek.com"
-                    value={baseUrl ?? ''}
-                    onChange={(e) => setBaseUrl(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="deepseek-model">模型名称（可选）</Label>
-                  <Input
-                    id="deepseek-model"
-                    type="text"
-                    placeholder="deepseek-chat"
-                    value={modelName ?? ''}
-                    onChange={(e) => setModelName(e.target.value)}
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button onClick={handleSave} disabled={saving}>
-                    <Save className="mr-2 h-4 w-4" />
-                    保存
-                  </Button>
-                  {hasKey('deepseek') && (
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleDelete('deepseek')}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      删除
-                    </Button>
-                  )}
-                  <Button
-                    variant="outline"
-                    onClick={handleTest}
-                  >
-                    测试连接
-                  </Button>
-                </div>
-              </TabsContent>
 
-              <TabsContent value="openai" className="space-y-4 pt-4">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
-                  <p className="font-medium mb-1">OpenAI API Key 获取</p>
-                  <p className="text-gray-600">访问 <a href="https://platform.openai.com/api-keys" target="_blank" className="text-blue-600 underline">platform.openai.com/api-keys</a> 获取</p>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="openai-key">API Key</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="openai-key"
-                      type={showKey ? 'text' : 'password'}
-                      placeholder="sk-..."
-                      value={apiKey ?? ''}
-                      onChange={(e) => setApiKey(e.target.value)}
-                    />
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setShowKey(!showKey)}
-                    >
-                      {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
+                  <div className="space-y-2">
+                    <Label htmlFor={`${provider.id}-key`} className="text-sm font-medium text-slate-700">API Key</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id={`${provider.id}-key`}
+                        type={showKey ? 'text' : 'password'}
+                        placeholder={provider.placeholder}
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                        className="h-12"
+                      />
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowKey(!showKey)}
+                        className="px-3"
+                      >
+                        {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="openai-url">API 地址（可选）</Label>
-                  <Input
-                    id="openai-url"
-                    type="text"
-                    placeholder="https://api.openai.com/v1"
-                    value={baseUrl ?? ''}
-                    onChange={(e) => setBaseUrl(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="openai-model">模型名称（可选）</Label>
-                  <Input
-                    id="openai-model"
-                    type="text"
-                    placeholder="gpt-4o-mini"
-                    value={modelName ?? ''}
-                    onChange={(e) => setModelName(e.target.value)}
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button onClick={handleSave} disabled={saving}>
-                    <Save className="mr-2 h-4 w-4" />
-                    保存
-                  </Button>
-                  {hasKey('openai') && (
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleDelete('openai')}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      删除
-                    </Button>
-                  )}
-                  <Button
-                    variant="outline"
-                    onClick={handleTest}
-                  >
-                    测试连接
-                  </Button>
-                </div>
-              </TabsContent>
 
-              <TabsContent value="zhipu" className="space-y-4 pt-4">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
-                  <p className="font-medium mb-1">智谱AI API Key 获取</p>
-                  <p className="text-gray-600">访问 <a href="https://open.bigmodel.cn" target="_blank" className="text-blue-600 underline">open.bigmodel.cn</a> 注册并获取</p>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="zhipu-key">API Key</Label>
-                  <div className="flex gap-2">
+                  <div className="space-y-2">
+                    <Label htmlFor={`${provider.id}-url`} className="text-sm font-medium text-slate-700">API 地址（可选）</Label>
                     <Input
-                      id="zhipu-key"
-                      type={showKey ? 'text' : 'password'}
-                      placeholder="..."
-                      value={apiKey ?? ''}
-                      onChange={(e) => setApiKey(e.target.value)}
+                      id={`${provider.id}-url`}
+                      type="text"
+                      placeholder={provider.url}
+                      value={baseUrl}
+                      onChange={(e) => setBaseUrl(e.target.value)}
+                      className="h-12"
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`${provider.id}-model`} className="text-sm font-medium text-slate-700">模型名称（可选）</Label>
+                    <Input
+                      id={`${provider.id}-model`}
+                      type="text"
+                      placeholder={provider.defaultModel}
+                      value={modelName}
+                      onChange={(e) => setModelName(e.target.value)}
+                      className="h-12"
+                    />
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <Button 
+                      onClick={handleSave} 
+                      disabled={saving}
+                      className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all"
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      {saving ? '保存中...' : '保存'}
+                    </Button>
+                    {hasKey(provider.id) && (
+                      <Button
+                        variant="outline"
+                        onClick={() => handleDelete(provider.id)}
+                        className="text-slate-600 hover:text-red-600 hover:border-red-300 hover:bg-red-50"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        删除
+                      </Button>
+                    )}
                     <Button
                       variant="outline"
-                      size="icon"
-                      onClick={() => setShowKey(!showKey)}
+                      onClick={handleTest}
                     >
-                      {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      测试连接
                     </Button>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="zhipu-url">API 地址（可选）</Label>
-                  <Input
-                    id="zhipu-url"
-                    type="text"
-                    placeholder="https://open.bigmodel.cn/api/paas/v4"
-                    value={baseUrl ?? ''}
-                    onChange={(e) => setBaseUrl(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="zhipu-model">模型名称（可选）</Label>
-                  <Input
-                    id="zhipu-model"
-                    type="text"
-                    placeholder="glm-4-flash"
-                    value={modelName ?? ''}
-                    onChange={(e) => setModelName(e.target.value)}
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button onClick={handleSave} disabled={saving}>
-                    <Save className="mr-2 h-4 w-4" />
-                    保存
-                  </Button>
-                  {hasKey('zhipu') && (
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleDelete('zhipu')}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      删除
-                    </Button>
-                  )}
-                  <Button
-                    variant="outline"
-                    onClick={handleTest}
-                  >
-                    测试连接
-                  </Button>
-                </div>
-              </TabsContent>
+                </TabsContent>
+              ))}
             </Tabs>
           </CardContent>
         </Card>
 
-        <Card className="mt-6">
+        <Card className="border-slate-200">
           <CardHeader>
             <CardTitle>已配置的 API Keys</CardTitle>
           </CardHeader>
           <CardContent>
             {apiKeys.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">暂无已配置的 API Key</p>
+              <div className="text-center py-8">
+                <div className="flex justify-center mb-4">
+                  <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center">
+                    <Key className="h-6 w-6 text-slate-400" />
+                  </div>
+                </div>
+                <p className="text-slate-600">暂无已配置的 API Key</p>
+              </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {apiKeys.map((key) => (
                   <div
                     key={key.provider}
-                    className="flex items-center justify-between p-3 border rounded-lg"
+                    className="flex items-center justify-between p-4 border border-slate-200 rounded-xl hover:border-indigo-300 hover:shadow-md transition-all"
                   >
-                    <div>
-                      <Badge variant="outline">{key.provider.toUpperCase()}</Badge>
-                      <span className="ml-2 text-sm text-gray-600">
-                        配置于 {new Date(key.createdAt).toLocaleString()}
-                      </span>
+                    <div className="flex items-center gap-4">
+                      <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${key.isActive ? 'bg-green-100' : 'bg-slate-100'}`}>
+                        {key.isActive ? (
+                          <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        ) : (
+                          <AlertCircle className="h-5 w-5 text-slate-600" />
+                        )}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="font-medium">
+                            {key.provider.toUpperCase()}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-slate-600 mt-1">
+                          配置于 {new Date(key.createdAt).toLocaleDateString('zh-CN')}
+                        </p>
+                      </div>
                     </div>
                     <Badge variant={key.isActive ? 'default' : 'secondary'}>
                       {key.isActive ? '已激活' : '未激活'}
@@ -426,6 +382,31 @@ export default function SettingsPage() {
                 ))}
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200 mt-6">
+          <CardContent className="p-6">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-indigo-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-slate-900 mb-2">安全提示</h3>
+                <ul className="space-y-2 text-sm text-slate-600">
+                  <li className="flex items-start gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                    <span>API Key 使用 AES 加密存储在本地数据库</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                    <span>定期更换 API Key 以提高安全性</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                    <span>不要将 API Key 分享给他人</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </main>

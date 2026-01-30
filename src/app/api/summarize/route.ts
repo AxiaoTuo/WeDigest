@@ -48,12 +48,6 @@ export async function POST(request: NextRequest) {
     }
 
     const apiKey = decrypt(apiKeyRecord.encryptedKey)
-    if (!apiKey) {
-      return NextResponse.json(
-        { success: false, error: 'API Key 解密失败' },
-        { status: 500 }
-      )
-    }
     const aiProvider = getProvider(provider as AIProviderType)
 
     const result = await aiProvider.summarize(content, options as SummaryOptions, apiKey, apiKeyRecord.baseUrl || undefined, apiKeyRecord.modelName || undefined)
