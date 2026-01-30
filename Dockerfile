@@ -2,9 +2,9 @@
 FROM node:20-alpine
 
 # 安装构建工具和 OpenSSL 兼容库
-RUN apk add --no-cache python3 make g++ openssl-dev openssl3-libs && \
-    ln -s /usr/lib/libssl.so.3 /usr/lib/libssl.so && \
-    ln -s /usr/lib/libcrypto.so.3 /usr/lib/libcrypto.so
+RUN apk add --no-cache python3 make g++ openssl-dev openssl && \
+    ln -s /lib/libssl.so.3 /lib/libssl.so && \
+    ln -s /lib/libcrypto.so.3 /lib/libcrypto.so || true
 
 # 设置工作目录
 WORKDIR /app
