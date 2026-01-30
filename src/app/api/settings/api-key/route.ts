@@ -99,6 +99,20 @@ export async function GET(request: NextRequest) {
         })
       }
 
+      let decryptedKey: string
+      try {
+        decryptedKey = decrypt(key.encryptedKey)
+      } catch (decryptError) {
+        // 解密失败：密钥不匹配，删除无效数据
+        await prisma.apiKey.delete({
+          where: { id: key.id }
+        })
+        return NextResponse.json({
+          success: true,
+          data: null
+        })
+      }
+
       return NextResponse.json({
         success: true,
         data: {
@@ -107,7 +121,7 @@ export async function GET(request: NextRequest) {
           baseUrl: key.baseUrl,
           modelName: key.modelName,
           createdAt: key.createdAt.toISOString(),
-          decryptedKey: decrypt(key.encryptedKey)
+          decryptedKey
         }
       })
     }
