@@ -1,24 +1,30 @@
-# 使用 Node.js 20 Alpine 作为基础镜像
-FROM node:20-alpine
+# 使用 Node.js 20 Slim (更稳定，但体积较大)
+FROM node:20-slim
 
-# 安装构建工具、OpenSSL 和 Chromium 运行依赖
-RUN apk add --no-cache \
-    python3 make g++ openssl-dev openssl \
-    chromium \
-    nss \
-    freetype \
-    harfbuzz \
+# 安装依赖
+RUN apt-get update && apt-get install -y \
+    python3 make g++ \
+    openssl \
     ca-certificates \
-    ttf-freefont \
-    wqy-zenhei \
-    && \
-    ln -s /lib/libssl.so.3 /lib/libssl.so && \
-    ln -s /lib/libcrypto.so.3 /lib/libcrypto.so || true
-
-# 设置 Chromium 环境变量 - 使用系统 Chromium
-ENV CHROMIUM_PATH=/usr/bin/chromium-browser
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+    fonts-liberation \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libatspi2.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libnss3 \
+    libwayland-client0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxkbcommon0 \
+    libxrandr2 \
+    xdg-utils \
+    && rm -rf /var/lib/apt/lists/*
 
 # 设置工作目录
 WORKDIR /app
@@ -34,12 +40,6 @@ RUN PUPPETEER_SKIP_DOWNLOAD=true npm ci
 
 # 复制剩余项目文件
 COPY . .
-
-# 重新编译 better-sqlite3 以兼容 Alpine
-RUN npm rebuild better-sqlite3
-
-# 生成 Prisma Client
-RUN npx prisma generate
 
 # 构建应用
 RUN npm run build

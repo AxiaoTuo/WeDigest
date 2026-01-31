@@ -7,6 +7,13 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    # 资源限制（可根据服务器内存调整）
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
     environment:
       # 数据库
       - DATABASE_URL=file:/app/data/dev.db
