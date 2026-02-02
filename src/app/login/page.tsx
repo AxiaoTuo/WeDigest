@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toast } from 'sonner'
 import { Loader2, BookOpen, ArrowLeft, Sparkles, Shield, Lock, User } from 'lucide-react'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -78,54 +79,57 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-indigo-50">
-      <nav className="border-b border-slate-200 bg-white/80 backdrop-blur-sm">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
+      <nav className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
         <div className="container mx-auto flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push('/')}>
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
               <BookOpen className="h-5 w-5 text-white" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">WeDigest</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">WeDigest</h1>
           </div>
-          <Button variant="ghost" onClick={() => router.push('/')} className="text-slate-700 hover:text-slate-900">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            返回首页
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" onClick={() => router.push('/')} className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              返回首页
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
       </nav>
 
       <main className="container mx-auto px-6 py-16">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-700 text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 text-sm font-medium mb-6">
               <Sparkles className="h-4 w-4" />
               欢迎使用 WeDigest
             </div>
-            <h2 className="text-3xl font-bold text-slate-900 mb-2">登录或注册</h2>
-            <p className="text-slate-600">开始您的智能阅读之旅</p>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">登录或注册</h2>
+            <p className="text-slate-600 dark:text-slate-400">开始您的智能阅读之旅</p>
           </div>
 
-          <Card className="border-2 border-slate-200 shadow-xl">
+          <Card className="border-2 border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm shadow-xl">
             <CardHeader className="text-center">
               <div className="flex justify-center mb-2">
                 <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
                   <User className="h-6 w-6 text-white" />
                 </div>
               </div>
-              <CardTitle className="text-2xl">账户</CardTitle>
-              <CardDescription>使用您的邮箱访问 WeDigest</CardDescription>
+              <CardTitle className="text-2xl text-slate-900 dark:text-slate-100">账户</CardTitle>
+              <CardDescription className="text-slate-600 dark:text-slate-400">使用您的邮箱访问 WeDigest</CardDescription>
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="login" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 bg-slate-100">
-                  <TabsTrigger value="login" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">登录</TabsTrigger>
-                  <TabsTrigger value="register" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">注册</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 bg-slate-100 dark:bg-slate-800">
+                  <TabsTrigger value="login" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm">登录</TabsTrigger>
+                  <TabsTrigger value="register" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm">注册</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="login">
                   <form onSubmit={handleLogin} className="space-y-4 pt-6">
                     <div className="space-y-2">
-                      <Label htmlFor="login-email" className="text-sm font-medium text-slate-700">邮箱</Label>
+                      <Label htmlFor="login-email" className="text-sm font-medium text-slate-700 dark:text-slate-300">邮箱</Label>
                       <div className="relative">
                         <Input
                           id="login-email"
@@ -140,7 +144,7 @@ export default function LoginPage() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="login-password" className="text-sm font-medium text-slate-700">密码</Label>
+                      <Label htmlFor="login-password" className="text-sm font-medium text-slate-700 dark:text-slate-300">密码</Label>
                       <div className="relative">
                         <Input
                           id="login-password"
@@ -174,7 +178,7 @@ export default function LoginPage() {
                 <TabsContent value="register">
                   <form onSubmit={handleRegister} className="space-y-4 pt-6">
                     <div className="space-y-2">
-                      <Label htmlFor="register-name" className="text-sm font-medium text-slate-700">用户名</Label>
+                      <Label htmlFor="register-name" className="text-sm font-medium text-slate-700 dark:text-slate-300">用户名</Label>
                       <Input
                         id="register-name"
                         placeholder="用户名（可选）"
@@ -184,7 +188,7 @@ export default function LoginPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="register-email" className="text-sm font-medium text-slate-700">邮箱</Label>
+                      <Label htmlFor="register-email" className="text-sm font-medium text-slate-700 dark:text-slate-300">邮箱</Label>
                       <div className="relative">
                         <Input
                           id="register-email"
@@ -199,7 +203,7 @@ export default function LoginPage() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="register-password" className="text-sm font-medium text-slate-700">密码</Label>
+                      <Label htmlFor="register-password" className="text-sm font-medium text-slate-700 dark:text-slate-300">密码</Label>
                       <div className="relative">
                         <Input
                           id="register-password"
@@ -214,9 +218,9 @@ export default function LoginPage() {
                         <Shield className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                       </div>
                     </div>
-                    <Button 
-                      type="submit" 
-                      className="w-full h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all" 
+                    <Button
+                      type="submit"
+                      className="w-full h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all"
                       disabled={loading}
                     >
                       {loading ? (
@@ -234,27 +238,27 @@ export default function LoginPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200 mt-6">
+          <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/50 dark:to-purple-950/50 border-indigo-200 dark:border-indigo-800 mt-6">
             <CardContent className="p-6">
               <div className="flex items-start gap-3">
-                <Sparkles className="h-5 w-5 text-indigo-600 flex-shrink-0 mt-0.5" />
+                <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <h3 className="font-semibold text-slate-900 mb-2">为什么选择 WeDigest?</h3>
-                  <ul className="space-y-2 text-sm text-slate-600">
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">为什么选择 WeDigest?</h3>
+                  <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
                     <li className="flex items-start gap-2">
-                      <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                      <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400 mt-2 flex-shrink-0" />
                       <span>AI 驱动的智能深度研报</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                      <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400 mt-2 flex-shrink-0" />
                       <span>支持多种 AI 模型</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                      <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400 mt-2 flex-shrink-0" />
                       <span>Markdown 格式导出</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                      <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400 mt-2 flex-shrink-0" />
                       <span>完全免费使用</span>
                     </li>
                   </ul>

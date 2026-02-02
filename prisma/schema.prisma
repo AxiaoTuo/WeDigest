@@ -21,6 +21,7 @@ model User {
 
   apiKeys       ApiKey[]
   summaries     Summary[]
+  promptTemplates PromptTemplate[]
 }
 
 model ApiKey {
@@ -50,9 +51,31 @@ model Summary {
   markdown      String
   keywords      String
   provider      String
+  isFavorite    Boolean  @default(false)
   createdAt     DateTime @default(now())
 
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
+  @@index([userId, isFavorite])
+}
+
+model PromptTemplate {
+  id          String   @id @default(cuid())
+  userId      String?
+  name        String
+  description String?
+  category    String   @default("custom")
+  prompt      String
+  variables   String   @default("[]") // JSON array of variable names
+  isSystem    Boolean  @default(false)
+  isFavorite  Boolean  @default(false)
+  usageCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, category])
+  @@index([userId, isFavorite])
 }

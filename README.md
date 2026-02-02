@@ -1,6 +1,6 @@
 # WeDigest
 
-> 微信公众号文章智能学习笔记 - 使用 AI 自动生成结构化、易读的学习笔记
+> 微信公众号文章智能学习笔记 - 使用 AI 自动生成结构化、易读的深度研报
 
 [![Next.js](https://img.shields.io/badge/Next.js-16.1-black)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.2-blue)](https://react.dev/)
@@ -8,35 +8,47 @@
 [![Prisma](https://img.shields.io/badge/Prisma-5.x-2D3748)](https://www.prisma.io/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-使用 AI 自动将微信公众号文章转化为结构清晰、易于阅读和整理的学习笔记，支持多种 AI 模型（OpenAI、DeepSeek、智谱AI）。
+使用 AI 自动将微信公众号文章转化为**深度研报级学习笔记**，支持多种 AI 模型（OpenAI、DeepSeek、智谱AI）、流式输出、自定义 Prompt 模板、多模型对比等功能。
 
 ## ✨ 功能特性
 
 ### 🎯 核心功能
 
 - **智能文章抓取** - 自动抓取微信公众号文章内容，支持动态渲染页面
-- **AI 学习笔记生成** - 将文章转化为结构化的学习笔记，而非简单摘要
-- **多种笔记风格** - 简洁版、详细版、要点版，满足不同学习需求
-- **自定义 AI 配置** - 支持自定义 API 地址和模型名称
-- **历史记录管理** - 自动保存所有生成的笔记，支持查看和管理
-- **Markdown 导出** - 导出为 Markdown 格式，便于复制到笔记工具
-- **安全认证** - NextAuth.js 身份验证，多用户隔离
-- **API Key 加密** - AES 加密存储敏感信息，保护用户数据
+- **AI 深度研报生成** - 首席架构师视角，主动拓展技术背景和知识网络
+- **实时流式输出** - AI 生成内容逐字显示，实时预览
+- **自定义 Prompt 模板** - 6 种预设模板 + 自定义模板
+- **多模型对比** - 同时使用多个 AI 模型，并排对比结果
+- **标签管理** - 自动提取文章标签，支持标签筛选
 
-### 📚 学习笔记特性
+### 📚 深度研报特性
 
-- **结构清晰** - 层次分明，易于理解和记忆
-- **适当总结和拓展** - 用自己的话重新组织，添加必要的注释
-- **关键概念解释** - 提供背景信息和概念说明
-- **思考与启发** - 提炼文章中的思考、感悟和行动建议
-- **实践建议** - 从文章中提炼可操作的建议
-- **Markdown 格式** - 支持 Notion、Obsidian 等笔记工具导入
+- **第一性原理重构** - 提炼核心痛点和解决路径
+- **关键技术拓展** - 自动补充技术背景、原理和竞品对比
+- **独家洞察与批判** - 类比理解、潜在局限、适用场景
+- **行动建议** - 可操作的学习和实践建议
+- **YAML 元数据** - 支持 Notion、Obsidian 无缝导入
 
 ### 🤖 AI 模型支持
 
 - **DeepSeek** (推荐) - 性价比极高的国产 AI 模型
 - **OpenAI** - GPT-4 等强大的国际模型
 - **智谱AI** - 国产领先的 AI 供应商
+
+### 🎨 用户体验
+
+- **深色模式** - 支持 light/dark/system 主题
+- **响应式设计** - 完美支持桌面和移动设备
+- **骨架加载屏** - 优雅的加载动画
+- **键盘快捷键** - Cmd+K 命令面板，快速导航
+- **批量操作** - 批量删除、收藏、导出
+
+### 📤 多格式导出
+
+- **Markdown** - 标准 .md 格式
+- **HTML** - 带完整样式的 .html 文件
+- **JSON** - 结构化数据
+- **Notion** - 带 YAML frontmatter 的 .md
 
 ### 🔒 安全特性
 
@@ -67,9 +79,10 @@
 
 ### AI 集成
 - **SDK**: OpenAI SDK (兼容 OpenAI 兼容接口)
-- **模型**: 支持自定义 Base URL 和模型名称
+- **流式输出**: Server-Sent Events (SSE)
+- **多模型**: 同时调用多个模型对比
+- **模板系统**: 支持变量替换的自定义 Prompt
 - **超时与重试**: 60 秒超时，2 次重试机制
-- **请求头**: 模拟浏览器请求，绕过常见防护
 
 ## 🚀 快速开始
 
@@ -238,6 +251,8 @@ npm run dev
 
 ```
 wedigest/
+├── docs/                   # 项目文档
+│   └── development-summary.md  # 开发总结文档
 ├── prisma/                # Prisma 配置
 │   ├── schema.prisma     # 数据库模型定义
 │   └── dev.db            # SQLite 数据库文件（运行时生成）
@@ -248,23 +263,37 @@ wedigest/
 ├── src/
 │   ├── app/              # Next.js App Router
 │   │   ├── api/        # API Routes
-│   │   │   ├── auth/           # NextAuth 认证
-│   │   │   ├── fetch/          # 文章抓取
-│   │   │   ├── summarize/      # AI 笔记生成
-│   │   │   ├── history/       # 历史记录
-│   │   │   ├── settings/       # 设置管理
-│   │   │   │   └── test-api/ # API 测试接口
-│   │   │   └── export/        # 导出功能
-│   │   ├── history/     # 历史记录页面
-│   │   ├── login/       # 登录/注册页面
-│   │   ├── result/      # 笔记结果页面
-│   │   ├── settings/    # 设置页面
-│   │   ├── layout.tsx   # 根布局
-│   │   └── page.tsx     # 首页
+│   │   │   ├── auth/              # NextAuth 认证
+│   │   │   ├── fetch/             # 文章抓取
+│   │   │   ├── summarize/        # AI 笔记生成
+│   │   │   ├── summarize/compare/ # 多模型对比
+│   │   │   ├── history/           # 历史记录
+│   │   │   │   └── batch/         # 批量操作
+│   │   │   ├── prompt-templates/ # 模板管理
+│   │   │   ├── tags/              # 标签统计
+│   │   │   ├── export/            # 导出功能
+│   │   │   └── settings/          # 设置管理
+│   │   ├── templates/      # 模板管理页面
+│   │   ├── compare/        # 模型对比页面
+│   │   ├── history/        # 历史记录页面
+│   │   ├── login/          # 登录/注册页面
+│   │   ├── result/         # 笔记结果页面
+│   │   ├── settings/       # 设置页面
+│   │   ├── layout.tsx      # 根布局
+│   │   ├── page.tsx        # 首页
+│   │   ├── error.tsx       # 错误页面
+│   │   ├── global-error.tsx # 全局错误页面
+│   │   └── not-found.tsx    # 404 页面
 │   ├── components/       # React 组件
-│   │   ├── ui/         # shadcn/ui 组件
-│   │   ├── providers.tsx # Provider 配置
-│   │   └── auth-guard.tsx # 认证守卫
+│   │   ├── ui/            # shadcn/ui 基础组件
+│   │   ├── skeleton/      # 骨架屏组件
+│   │   ├── history/       # 历史相关组件
+│   │   ├── command-palette.tsx  # 命令面板
+│   │   ├── theme-toggle.tsx     # 主题切换
+│   │   ├── error-boundary.tsx    # 错误边界
+│   │   ├── tag-cloud.tsx         # 标签云
+│   │   ├── tag-filter.tsx        # 标签筛选
+│   │   └── providers.tsx         # Provider 配置
 │   ├── lib/            # 核心业务逻辑
 │   │   ├── ai-providers/    # AI 供应商适配层
 │   │   │   ├── base.ts         # 基础抽象类
@@ -272,26 +301,39 @@ wedigest/
 │   │   │   ├── deepseek.ts     # DeepSeek 实现
 │   │   │   ├── zhipu.ts        # 智谱AI 实现
 │   │   │   └── index.ts        # Provider 工厂
-│   │   ├── scraper/         # 文章抓取模块
-│   │   │   ├── puppeteer.ts    # Puppeteer 封装
-│   │   │   ├── parser.ts       # 内容解析
-│   │   │   └── index.ts        # 统一入口
-│   │   ├── auth.ts          # NextAuth 配置
-│   │   ├── db.ts            # Prisma 客户端
-│   │   ├── crypto.ts        # 加密工具
-│   │   └── utils.ts         # 工具函数
+│   │   ├── prompts/        # Prompt 模板
+│   │   │   └── presets.ts     # 预设模板
+│   │   ├── export/         # 导出格式
+│   │   │   └── formats.ts     # 格式处理
+│   │   ├── api/            # API 客户端
+│   │   │   └── client.ts      # 统一 API 封装
+│   │   ├── scraper/        # 文章抓取模块
+│   │   ├── auth.ts         # NextAuth 配置
+│   │   ├── db.ts           # Prisma 客户端
+│   │   ├── crypto.ts       # 加密工具
+│   │   ├── errors.ts       # 错误处理
+│   │   └── utils.ts        # 工具函数
+│   ├── hooks/           # React Hooks
+│   │   ├── use-keyboard-shortcuts.ts  # 键盘快捷键
+│   │   ├── use-debounce.ts            # 防抖钩子
+│   │   └── use-streaming-summary.ts  # 流式输出
 │   ├── store/           # Zustand 状态管理
 │   │   └── app-store.ts  # 应用状态
-│   └── types/           # TypeScript 类型定义
-│       ├── article.ts
-│       ├── ai-provider.ts
-│       ├── api.ts
-│       └── next-auth.d.ts
+│   ├── types/           # TypeScript 类型定义
+│   │   ├── api.ts                # API 类型
+│   │   ├── ai-provider.ts       # AI 提供者类型
+│   │   ├── prompt.ts            # 模板类型
+│   │   └── next-auth.d.ts       # NextAuth 类型
+│   └── __tests__/       # 测试文件
+│       ├── setup.ts              # 测试配置
+│       ├── lib/
+│       │   ├── api/
+│       │   │   └── client.test.ts   # API 客户端测试
+│       │   └── errors.test.ts     # 错误处理测试
+│       └── ...
 ├── .env                 # 环境变量
 ├── .env.example         # 环境变量示例
-├── AGENTS.md            # 代理编码指南
-├── API_BYPASS.md        # API 防护绕过说明
-├── NOTE_FEATURE.md      # 学习笔记功能说明
+├── package.json         # 项目依赖
 └── README.md            # 项目说明
 ```
 
@@ -333,21 +375,34 @@ npm run db:check
 
 ### 文章处理
 - `POST /api/fetch` - 抓取微信公众号文章
-- `POST /api/summarize` - 生成 AI 学习笔记
+- `POST /api/summarize` - 生成 AI 学习笔记（支持流式输出）
+- `POST /api/summarize/compare` - 多模型对比
 
 ### 历史记录
-- `GET /api/history` - 获取历史记录
+- `GET /api/history` - 获取历史记录（支持搜索、筛选、分页）
 - `GET /api/history/[id]` - 获取单条记录
 - `DELETE /api/history/[id]` - 删除记录
+- `POST /api/history/batch` - 批量操作（删除、收藏、导出）
+
+### 导出
+- `GET /api/export` - 导出学习笔记（支持 md/html/json/notion 格式）
+
+### Prompt 模板
+- `GET /api/prompt-templates` - 获取模板列表
+- `POST /api/prompt-templates` - 创建自定义模板
+- `GET /api/prompt-templates/[id]` - 获取单个模板
+- `PATCH /api/prompt-templates/[id]` - 更新模板
+- `DELETE /api/prompt-templates/[id]` - 删除模板
+- `POST /api/prompt-templates/[id]/use` - 记录模板使用
+
+### 标签
+- `GET /api/tags` - 获取标签统计
 
 ### 设置
 - `GET /api/settings/api-key` - 获取 API Keys
 - `POST /api/settings/api-key` - 保存 API Key
 - `DELETE /api/settings/api-key` - 删除 API Key
 - `POST /api/settings/test-api` - 测试 API 连接
-
-### 导出
-- `GET /api/export` - 导出学习笔记为 Markdown
 
 ## 🚢 部署
 
@@ -485,6 +540,7 @@ npm run db:rebuild
 
 ## 📚 相关文档
 
+- [docs/development-summary.md](docs/development-summary.md) - **开发总结文档** (本次开发完整记录)
 - [AGENTS.md](AGENTS.md) - 代理编码指南
 - [QUICKSTART.md](QUICKSTART.md) - 快速开始指南
 - [API_BYPASS.md](API_BYPASS.md) - API 防护绕过说明

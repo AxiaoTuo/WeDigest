@@ -37,6 +37,7 @@ export interface HistoryItem {
   articleAuthor?: string
   keywords: string[]
   provider: string
+  isFavorite: boolean
   createdAt: string
 }
 

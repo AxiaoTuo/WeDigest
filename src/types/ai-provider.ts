@@ -15,10 +15,24 @@ export interface SummaryResult {
   markdown: string
 }
 
+export interface StreamChunk {
+  content: string
+  done: boolean
+}
+
 export interface AIProvider {
   name: AIProviderType
   displayName: string
-  summarize(content: string, options: SummaryOptions, apiKey: string, baseUrl?: string, modelName?: string): Promise<SummaryResult>
+  summarize(content: string, options: SummaryOptions, apiKey: string, baseUrl?: string, modelName?: string, customTemplate?: string): Promise<SummaryResult>
+  summarizeStream(
+    content: string,
+    options: SummaryOptions,
+    apiKey: string,
+    onChunk: (chunk: StreamChunk) => void,
+    baseUrl?: string,
+    modelName?: string,
+    customTemplate?: string
+  ): Promise<SummaryResult>
 }
 
 export interface ProviderConfig {

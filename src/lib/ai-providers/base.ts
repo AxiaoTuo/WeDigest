@@ -1,4 +1,4 @@
-import { AIProvider, SummaryOptions, SummaryResult } from '@/types/ai-provider'
+import { AIProvider, SummaryOptions, SummaryResult, StreamChunk } from '@/types/ai-provider'
 
 export abstract class BaseAIProvider implements AIProvider {
   abstract name: AIProvider['name']
@@ -9,10 +9,36 @@ export abstract class BaseAIProvider implements AIProvider {
     options: SummaryOptions,
     apiKey: string,
     baseUrl?: string,
-    modelName?: string
+    modelName?: string,
+    customTemplate?: string
   ): Promise<SummaryResult>
 
-  protected buildPrompt(content: string, options: SummaryOptions): string {
+  abstract summarizeStream(
+    content: string,
+    options: SummaryOptions,
+    apiKey: string,
+    onChunk: (chunk: StreamChunk) => void,
+    baseUrl?: string,
+    modelName?: string,
+    customTemplate?: string
+  ): Promise<SummaryResult>
+
+  protected buildPrompt(content: string, options: SummaryOptions, customTemplate?: string): string {
+    // 如果提供了自定义模板，使用模板
+    if (customTemplate) {
+      const { language } = options
+      const lang = language === 'zh' ? '中文' : 'English'
+
+      return customTemplate
+        .replace(/\{content\}/g, content.slice(0, 12000))
+        .replace(/\{language\}/g, lang)
+        .replace(/\{lang\}/g, lang)
+        .replace(/\{date\}/g, new Date().toISOString().split('T')[0])
+        .replace(/\{author\}/g, 'AxiaoTuo')
+        .replace(/\{title\}/g, '学习笔记')
+    }
+
+    // 默认模板
     const { language } = options
     const lang = language === 'zh' ? '中文' : 'English'
 
