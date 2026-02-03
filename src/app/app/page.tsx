@@ -18,6 +18,8 @@ import { Loader2, BookOpen, History, Settings, ArrowLeft, Zap, Globe, Sparkles, 
 import { ThemeToggle } from '@/components/theme-toggle'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { ProgressStepper } from '@/components/progress-stepper'
+import { GuestModeOverlay } from '@/components/guest-mode-overlay'
 
 export default function AppPage() {
   const router = useRouter()
@@ -37,7 +39,11 @@ export default function AppPage() {
     setSummaryOptions,
     isLoading,
     setIsLoading,
-    setError
+    setError,
+    progressStep,
+    setProgressStep,
+    setProgressMessage,
+    reset
   } = useAppStore()
 
   const { isStreaming, streamedContent, startStreaming, cancelStreaming, resetStreaming } = useStreamingSummary()
@@ -73,8 +79,7 @@ export default function AppPage() {
 
   const handleFetch = async () => {
     if (!session) {
-      toast.error('请先登录')
-      router.push('/login')
+      // Don't show error or redirect - let the guest mode overlay handle it
       return
     }
 
@@ -85,19 +90,91 @@ export default function AppPage() {
 
     setIsLoading(true)
     setError(null)
+    setProgressStep('validate')
+    setProgressMessage('验证链接格式...')
 
     try {
-      const fetchRes = await fetch('/api/fetch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url })
-      })
-
-      const fetchData = await fetchRes.json()
-
-      if (!fetchData.success) {
-        toast.error(fetchData.error || '抓取失败')
+      // Validate URL
+      try {
+        new URL(url)
+      } catch {
+        toast.error('请输入有效的 URL')
         setIsLoading(false)
+        setProgressStep('idle')
+        return
+      }
+
+      setProgressStep('fetch')
+      setProgressMessage('正在抓取文章内容...')
+
+      // Use SSE for progress updates during fetch
+      let fetchData
+      try {
+        const fetchRes = await fetch('/api/fetch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, stream: true })
+        })
+
+        if (!fetchRes.ok) {
+          throw new Error('请求失败')
+        }
+
+        const reader = fetchRes.body?.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ''
+        let currentEvent = ''
+
+        if (!reader) {
+          throw new Error('无法读取响应')
+        }
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+          buffer = lines.pop() || ''
+
+          for (const line of lines) {
+            if (line.startsWith('event: ')) {
+              currentEvent = line.slice(7).trim()
+            } else if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6))
+
+                if (currentEvent === 'progress') {
+                  setProgressMessage(data.message)
+                  if (data.step === 'validate') setProgressStep('validate')
+                  else if (data.step === 'fetch') setProgressStep('fetch')
+                  else if (data.step === 'parse') setProgressStep('fetch')
+                } else if (currentEvent === 'complete') {
+                  fetchData = { success: true, data: { article: data.article } }
+                } else if (currentEvent === 'error') {
+                  throw new Error(data.message)
+                }
+              } catch (e) {
+                // Ignore parse errors for incomplete chunks
+              }
+            }
+            // Reset event after processing data
+            if (line.trim() === '') {
+              currentEvent = ''
+            }
+          }
+        }
+      } catch (error: any) {
+        toast.error(error?.message || '抓取失败')
+        setIsLoading(false)
+        setProgressStep('idle')
+        return
+      }
+
+      if (!fetchData || !fetchData.success) {
+        toast.error(fetchData?.error || '抓取失败')
+        setIsLoading(false)
+        setProgressStep('idle')
         return
       }
 
@@ -105,6 +182,8 @@ export default function AppPage() {
 
       // 对比模式
       if (useComparison) {
+        setProgressStep('analyze')
+        setProgressMessage('正在分析文章内容...')
         toast.success('文章抓取成功，正在生成对比...')
 
         try {
@@ -127,9 +206,11 @@ export default function AppPage() {
           if (!compareData.success) {
             toast.error(compareData.error || '对比失败')
             setIsLoading(false)
+            setProgressStep('idle')
             return
           }
 
+          setProgressStep('complete')
           // 跳转到对比结果页面
           const encodedData = encodeURIComponent(JSON.stringify(compareData.data))
           router.push(`/compare?data=${encodedData}`)
@@ -137,12 +218,15 @@ export default function AppPage() {
           console.error(error)
           toast.error('对比失败')
           setIsLoading(false)
+          setProgressStep('idle')
         }
         return
       }
 
       // 使用流式输出
       if (useStreaming) {
+        setProgressStep('analyze')
+        setProgressMessage('AI 正在分析文章内容...')
         toast.success('文章抓取成功，正在生成摘要...')
 
         startStreaming(
@@ -155,21 +239,26 @@ export default function AppPage() {
           selectedTemplate || undefined,
           {
             onChunk: (content) => {
-              // 可以在这里添加额外的处理
+              setProgressStep('generate')
+              setProgressMessage('AI 正在生成深度研报...')
             },
             onComplete: (result, id) => {
               toast.success('摘要生成成功')
               setStreamingCompleteId(id)
               setIsLoading(false)
+              setProgressStep('complete')
             },
             onError: (error) => {
               toast.error(error || 'AI 总结失败')
               setIsLoading(false)
+              setProgressStep('idle')
             }
           }
         )
       } else {
         // 非流式输出
+        setProgressStep('analyze')
+        setProgressMessage('AI 正在分析文章内容...')
         toast.success('文章抓取成功，正在生成摘要...')
 
         const summarizeRes = await fetch('/api/summarize', {
@@ -191,9 +280,11 @@ export default function AppPage() {
         if (!summarizeData.success) {
           toast.error(summarizeData.error || 'AI 总结失败')
           setIsLoading(false)
+          setProgressStep('idle')
           return
         }
 
+        setProgressStep('complete')
         toast.success('摘要生成成功')
         router.push(`/result?id=${summarizeData.data.id}`)
       }
@@ -202,6 +293,7 @@ export default function AppPage() {
       toast.error('请求失败，请稍后重试')
       setError(error instanceof Error ? error.message : '未知错误')
       setIsLoading(false)
+      setProgressStep('idle')
     }
   }
 
@@ -209,6 +301,8 @@ export default function AppPage() {
     cancelStreaming()
     setIsLoading(false)
     resetStreaming()
+    setProgressStep('idle')
+    setProgressMessage(null)
     toast.info('已取消生成')
   }
 
@@ -484,6 +578,20 @@ export default function AppPage() {
           </Card>
         </div>
 
+        {/* Progress Stepper */}
+        {progressStep !== 'idle' && progressStep !== 'complete' && (
+          <Card className="mb-6 border-indigo-200 dark:border-indigo-800 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md">
+            <CardContent className="p-4 sm:p-6">
+              <ProgressStepper currentStep={progressStep} />
+              {progressMessage && (
+                <p className="text-center text-sm text-slate-600 dark:text-slate-400 mt-4 animate-pulse">
+                  {progressMessage}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/50 dark:to-purple-950/50 border-indigo-200 dark:border-indigo-800">
           <CardContent className="p-4 sm:p-6">
             <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4 flex items-center gap-2 text-base sm:text-lg">
@@ -511,6 +619,9 @@ export default function AppPage() {
           </CardContent>
         </Card>
       </main>
+
+      {/* Guest Mode Overlay */}
+      {!session && <GuestModeOverlay />}
     </div>
   )
 }

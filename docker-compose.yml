@@ -2,18 +2,24 @@ version: '3.8'
 
 services:
   wedigest:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    image: wedigest:latest
     container_name: wedigest
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "${PORT:-3000}:3000"
     # 资源限制（可根据服务器内存调整）
     deploy:
       resources:
         limits:
-          memory: 1G
+          memory: ${MEMORY_LIMIT:-1G}
+          cpus: ${CPU_LIMIT:-1}
         reservations:
-          memory: 256M
+          memory: ${MEMORY_RESERVATION:-256M}
+          cpus: ${CPU_RESERVATION:-0.25}
     environment:
       # 数据库
       - DATABASE_URL=file:/app/data/dev.db
@@ -33,15 +39,24 @@ services:
       - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
       - ZHIPU_API_KEY=${ZHIPU_API_KEY:-}
       - DEFAULT_AI_PROVIDER=${DEFAULT_AI_PROVIDER:-deepseek}
+
+      # Node.js 配置
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
     volumes:
       # 持久化数据库数据
       - ./data:/app/data
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+    networks:
+      - wedigest-network
+    labels:
+      - "com.wedigest.description=WeDigest AI-powered article summarizer"
+      - "com.wedigest.version=1.0.0"
 
   # 可选: Nginx 反向代理 (生产环境推荐)
   nginx:
@@ -55,6 +70,18 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./ssl:/etc/nginx/ssl:ro
     depends_on:
-      - wedigest
+      wedigest:
+        condition: service_healthy
+    networks:
+      - wedigest-network
     profiles:
       - with-nginx
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  wedigest-network:
+    driver: bridge
