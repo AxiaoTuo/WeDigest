@@ -4,6 +4,10 @@ import bcrypt from "bcryptjs"
 import { prisma } from "./db"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  // 修复 NextAuth v5 认证错误
+  trustHost: true,
+  // 使用完整的 URL 而不是相对路径（修复开发环境问题）
+  secret: process.env.AUTH_SECRET,
   providers: [
     Credentials({
       credentials: {
