@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "dev:full": "npm run db:setup && next dev --turbopack",
+    "dev": "node scripts/clean-dev-lock.js && next dev --turbopack",
+    "dev:full": "npm run db:setup && node scripts/clean-dev-lock.js && next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
