@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
-import { BookOpen, Home, Trash2, Eye, Loader2, Sparkles, Clock, FileText, Search, Filter, Star, ArrowUpDown, X, CheckSquare, Square, Download } from 'lucide-react'
+import { BookOpen, Home, Trash2, Eye, Sparkles, Clock, FileText, Search, Filter, Star, ArrowUpDown, X, CheckSquare } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { HistorySkeleton } from '@/components/skeleton/history-skeleton'
 import { HistoryItem } from '@/types/api'
@@ -141,15 +141,6 @@ export default function HistoryPage() {
     }
   }
 
-  // 批量操作
-  const toggleSelectAll = () => {
-    if (selectedIds.size === items.length) {
-      setSelectedIds(new Set())
-    } else {
-      setSelectedIds(new Set(items.map(i => i.id)))
-    }
-  }
-
   const toggleSelectOne = (id: string) => {
     const newSelected = new Set(selectedIds)
     if (newSelected.has(id)) {
@@ -229,20 +220,20 @@ export default function HistoryPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
-      <nav className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push('/')}>
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
+      <nav className="border-b border-slate-200/50 dark:border-slate-700/50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-50">
+        <div className="container mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
+          <div className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-80" onClick={() => router.push('/')}>
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg">
               <BookOpen className="h-5 w-5 text-white" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">WeDigest</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">WeDigest</h1>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" onClick={() => router.push('/app')} className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Button variant="ghost" onClick={() => router.push('/app')} className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200">
               <FileText className="mr-2 h-4 w-4" />
               开始使用
             </Button>
-            <Button variant="ghost" onClick={() => router.push('/settings')} className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
+            <Button variant="ghost" onClick={() => router.push('/settings')} className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200">
               设置
             </Button>
             <ThemeToggle />
@@ -250,21 +241,21 @@ export default function HistoryPage() {
         </div>
       </nav>
 
-      <main className="container mx-auto max-w-6xl px-6 py-12">
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
-                <Clock className="h-6 w-6 text-white" />
+      <main className="container mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                <Clock className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
               </div>
               <div>
-                <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">历史记录</h2>
-                <p className="text-slate-600 dark:text-slate-400">查看您的所有深度研报</p>
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">历史记录</h2>
+                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">查看您的所有深度研报</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 text-sm font-medium">
-                <Sparkles className="h-4 w-4" />
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 text-xs sm:text-sm font-medium border border-indigo-200 dark:border-indigo-800">
+                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span>共 {total} 条记录</span>
               </div>
               <Button
@@ -273,7 +264,7 @@ export default function HistoryPage() {
                   setIsBatchMode(!isBatchMode)
                   if (isBatchMode) setSelectedIds(new Set())
                 }}
-                className="h-9"
+                className="h-9 text-sm transition-all duration-200"
               >
                 {isBatchMode ? (
                   <>
@@ -291,9 +282,9 @@ export default function HistoryPage() {
           </div>
 
           {/* 搜索和筛选栏 */}
-          <Card className="border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm">
-            <CardContent className="p-4">
-              <div className="flex flex-col lg:flex-row gap-4">
+          <Card className="border-slate-200/50 dark:border-slate-700/50 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md shadow-sm">
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex flex-col lg:flex-row gap-2 sm:gap-3">
                 {/* 搜索框 */}
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -301,14 +292,14 @@ export default function HistoryPage() {
                     placeholder="搜索标题或作者..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="pl-10 h-10"
+                    className="pl-10 h-9 sm:h-10 transition-colors duration-200"
                   />
                 </div>
 
                 {/* 供应商筛选 */}
                 <div className="w-full lg:w-40">
                   <Select value={providerFilter} onValueChange={setProviderFilter}>
-                    <SelectTrigger className="h-10">
+                    <SelectTrigger className="h-9 sm:h-10">
                       <SelectValue placeholder="AI 供应商" />
                     </SelectTrigger>
                     <SelectContent>
@@ -323,7 +314,7 @@ export default function HistoryPage() {
                 {/* 收藏筛选 */}
                 <div className="w-full lg:w-32">
                   <Select value={favoriteFilter} onValueChange={setFavoriteFilter}>
-                    <SelectTrigger className="h-10">
+                    <SelectTrigger className="h-9 sm:h-10">
                       <SelectValue placeholder="收藏" />
                     </SelectTrigger>
                     <SelectContent>
@@ -341,7 +332,7 @@ export default function HistoryPage() {
                     const tagFilter = document.getElementById('tag-filter-section')
                     tagFilter?.scrollIntoView({ behavior: 'smooth' })
                   }}
-                  className="h-10"
+                  className="h-9 sm:h-10 transition-all duration-200"
                 >
                   <Filter className="mr-2 h-4 w-4" />
                   标签
@@ -352,10 +343,10 @@ export default function HistoryPage() {
                 <Button
                   variant="outline"
                   onClick={toggleSort}
-                  className="h-10"
+                  className="h-9 sm:h-10 transition-all duration-200"
                 >
                   <ArrowUpDown className="mr-2 h-4 w-4" />
-                  {sortBy === 'createdAt' ? '时间' : '标题'}
+                  <span className="hidden sm:inline">{sortBy === 'createdAt' ? '时间' : '标题'}</span>
                   {sortOrder === 'asc' ? '↑' : '↓'}
                 </Button>
 
@@ -364,7 +355,7 @@ export default function HistoryPage() {
                   <Button
                     variant="ghost"
                     onClick={clearFilters}
-                    className="h-10 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400"
+                    className="h-9 sm:h-10 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors duration-200"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -373,33 +364,33 @@ export default function HistoryPage() {
 
               {/* 活跃筛选标签 */}
               {hasFilters && (
-                <div className="flex flex-wrap items-center gap-2 mt-3">
+                <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-3">
                   {debouncedSearch && (
-                    <Badge variant="secondary" className="gap-1">
+                    <Badge variant="secondary" className="gap-1 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200" onClick={() => setSearch('')}>
                       <Search className="h-3 w-3" />
-                      "{debouncedSearch}"
-                      <X className="h-3 w-3 cursor-pointer" onClick={() => setSearch('')} />
+                      &quot;{debouncedSearch}&quot;
+                      <X className="h-3 w-3" />
                     </Badge>
                   )}
                   {providerFilter !== 'all' && (
-                    <Badge variant="secondary" className="gap-1">
+                    <Badge variant="secondary" className="gap-1 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200" onClick={() => setProviderFilter('all')}>
                       <Sparkles className="h-3 w-3" />
                       {providerFilter.toUpperCase()}
-                      <X className="h-3 w-3 cursor-pointer" onClick={() => setProviderFilter('all')} />
+                      <X className="h-3 w-3" />
                     </Badge>
                   )}
                   {tagFilters.map(tag => (
-                    <Badge key={tag} variant="secondary" className="gap-1">
+                    <Badge key={tag} variant="secondary" className="gap-1 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200" onClick={() => setTagFilters(tagFilters.filter(t => t !== tag))}>
                       <Filter className="h-3 w-3" />
                       {tag}
-                      <X className="h-3 w-3 cursor-pointer" onClick={() => setTagFilters(tagFilters.filter(t => t !== tag))} />
+                      <X className="h-3 w-3" />
                     </Badge>
                   ))}
                   {favoriteFilter === 'true' && (
-                    <Badge variant="secondary" className="gap-1">
+                    <Badge variant="secondary" className="gap-1 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200" onClick={() => setFavoriteFilter('all')}>
                       <Star className="h-3 w-3" />
                       已收藏
-                      <X className="h-3 w-3 cursor-pointer" onClick={() => setFavoriteFilter('all')} />
+                      <X className="h-3 w-3" />
                     </Badge>
                   )}
                 </div>
@@ -419,27 +410,27 @@ export default function HistoryPage() {
         {loading ? (
           <HistorySkeleton />
         ) : items.length === 0 ? (
-          <Card className="max-w-lg mx-auto border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm">
-            <CardContent className="py-16 text-center">
-              <div className="flex justify-center mb-4">
-                <div className="h-16 w-16 rounded-full bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center">
-                  <FileText className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+          <Card className="max-w-lg mx-auto border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md">
+            <CardContent className="py-12 sm:py-16 text-center px-6">
+              <div className="flex justify-center mb-6">
+                <div className="h-20 w-20 rounded-full bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-950/50 dark:to-indigo-900/50 flex items-center justify-center shadow-inner">
+                  <FileText className="h-10 w-10 text-indigo-600 dark:text-indigo-400" />
                 </div>
               </div>
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">
+              <h3 className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-2">
                 {hasFilters ? '未找到匹配的记录' : '暂无历史记录'}
               </h3>
-              <p className="text-slate-600 dark:text-slate-400 mb-6">
+              <p className="text-slate-600 dark:text-slate-400 mb-6 sm:mb-8">
                 {hasFilters ? '尝试调整筛选条件' : '开始生成您的第一个深度研报吧'}
               </p>
               {hasFilters ? (
-                <Button onClick={clearFilters} variant="outline">
+                <Button onClick={clearFilters} variant="outline" className="transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-800">
                   清除筛选
                 </Button>
               ) : (
                 <Button
                   onClick={() => router.push('/app')}
-                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all"
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 transition-all duration-200"
                 >
                   <Home className="mr-2 h-4 w-4" />
                   开始使用
@@ -451,57 +442,57 @@ export default function HistoryPage() {
           <>
             {/* 批量操作栏 */}
             {isBatchMode && selectedIds.size > 0 && (
-              <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40">
-                <Card className="shadow-2xl border-indigo-300 dark:border-indigo-600 bg-white dark:bg-slate-800">
-                  <CardContent className="p-3 flex items-center gap-3">
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-lg px-4">
+                <Card className="shadow-2xl shadow-indigo-500/10 border-indigo-200 dark:border-indigo-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md">
+                  <CardContent className="p-3 sm:p-4 flex items-center justify-between gap-2">
+                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300 shrink-0">
                       已选择 <span className="text-indigo-600 dark:text-indigo-400 font-bold">{selectedIds.size}</span> 项
                     </span>
-                    <div className="h-6 w-px bg-slate-300 dark:bg-slate-600" />
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleBatchFavorite(true)}
-                      className="text-slate-600 dark:text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-500"
-                    >
-                      <Star className="mr-1 h-4 w-4" />
-                      收藏
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleBatchFavorite(false)}
-                      className="text-slate-600 dark:text-slate-400"
-                    >
-                      <Star className="mr-1 h-4 w-4" />
-                      取消收藏
-                    </Button>
-                    <div className="h-6 w-px bg-slate-300 dark:bg-slate-600" />
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={handleBatchDelete}
-                      className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50"
-                    >
-                      <Trash2 className="mr-1 h-4 w-4" />
-                      删除
-                    </Button>
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleBatchFavorite(true)}
+                        className="text-slate-600 dark:text-slate-400 hover:text-yellow-600 dark:hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-950/30 transition-colors duration-200"
+                      >
+                        <Star className="mr-1 h-4 w-4" />
+                        <span className="hidden sm:inline">收藏</span>
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleBatchFavorite(false)}
+                        className="text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors duration-200"
+                      >
+                        <Star className="mr-1 h-4 w-4" />
+                        <span className="hidden sm:inline">取消收藏</span>
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={handleBatchDelete}
+                        className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors duration-200"
+                      >
+                        <Trash2 className="mr-1 h-4 w-4" />
+                        <span className="hidden sm:inline">删除</span>
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
             )}
 
-            <div className="grid md:grid-cols-2 gap-4 mb-8">
+            <div className="grid md:grid-cols-2 gap-3 sm:gap-4 mb-8">
               {items.map((item) => (
                 <Card
                   key={item.id}
-                  className={`border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-md transition-all cursor-pointer group bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm ${
-                    isBatchMode ? 'ring-2 ring-indigo-500 ring-offset-2' : ''
+                  className={`border-slate-200/60 dark:border-slate-700/60 hover:border-indigo-400 dark:hover:border-indigo-500 hover:shadow-md hover:shadow-indigo-500/5 transition-all duration-200 cursor-pointer group bg-white/90 dark:bg-slate-800/90 backdrop-blur-md ${
+                    isBatchMode ? 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-background' : ''
                   }`}
                   onClick={() => !isBatchMode && router.push(`/result?id=${item.id}`)}
                 >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between gap-4">
+                  <CardHeader className="pb-2 sm:pb-3">
+                    <div className="flex items-start justify-between gap-3 sm:gap-4">
                       <div className="flex items-start gap-3 flex-1 min-w-0">
                         {/* 多选 checkbox */}
                         {isBatchMode && (
@@ -512,15 +503,15 @@ export default function HistoryPage() {
                             className="mt-1"
                           />
                         )}
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-2">
-                            <CardTitle className="text-lg font-semibold text-slate-900 dark:text-slate-100 line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                            <CardTitle className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100 line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200">
                               {item.articleTitle}
                             </CardTitle>
                             <Button
                               size="sm"
                               variant="ghost"
-                              className={`h-7 w-7 p-0 ${item.isFavorite ? 'text-yellow-500 hover:text-yellow-600' : 'text-slate-400 hover:text-yellow-500'}`}
+                              className={`h-7 w-7 p-0 flex-shrink-0 transition-colors duration-200 ${item.isFavorite ? 'text-yellow-500 hover:text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-950/30' : 'text-slate-400 hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-950/30'}`}
                               onClick={(e) => {
                                 e.stopPropagation()
                                 handleToggleFavorite(item.id, item.isFavorite)
@@ -529,11 +520,11 @@ export default function HistoryPage() {
                               <Star className={`h-4 w-4 ${item.isFavorite ? 'fill-current' : ''}`} />
                             </Button>
                           </div>
-                          <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                             {item.articleAuthor && (
                               <span className="flex items-center gap-1">
                                 <FileText className="h-3 w-3" />
-                                {item.articleAuthor}
+                                <span className="truncate max-w-24">{item.articleAuthor}</span>
                               </span>
                             )}
                             <span className="flex items-center gap-1">
@@ -547,11 +538,11 @@ export default function HistoryPage() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex gap-2 shrink-0">
+                      <div className="flex gap-1 sm:gap-2 shrink-0">
                         <Button
                           size="sm"
                           variant="outline"
-                          className="hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-600"
+                          className="h-8 w-8 sm:w-9 p-0 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-200"
                           onClick={(e) => {
                             e.stopPropagation()
                             router.push(`/result?id=${item.id}`)
@@ -562,7 +553,7 @@ export default function HistoryPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 hover:border-red-300 dark:hover:border-red-700"
+                          className="h-8 w-8 sm:w-9 p-0 text-slate-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:border-red-300 dark:hover:border-red-700 transition-all duration-200"
                           onClick={(e) => {
                             e.stopPropagation()
                             handleDelete(item.id)
@@ -573,16 +564,16 @@ export default function HistoryPage() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {item.keywords.slice(0, 5).map((keyword) => (
-                        <Badge key={keyword} variant="secondary" className="text-xs bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50">
+                  <CardContent className="pt-0">
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                      {item.keywords.slice(0, 4).map((keyword) => (
+                        <Badge key={keyword} variant="secondary" className="text-xs bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors duration-200">
                           {keyword}
                         </Badge>
                       ))}
-                      {item.keywords.length > 5 && (
-                        <Badge variant="secondary" className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-400">
-                          +{item.keywords.length - 5}
+                      {item.keywords.length > 4 && (
+                        <Badge variant="secondary" className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                          +{item.keywords.length - 4}
                         </Badge>
                       )}
                     </div>
@@ -592,26 +583,26 @@ export default function HistoryPage() {
             </div>
 
             {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-4 pt-8">
+              <div className="flex justify-center items-center gap-3 sm:gap-4 pt-6 sm:pt-8">
                 <Button
                   variant="outline"
                   disabled={page === 1}
                   onClick={() => setPage(p => p - 1)}
-                  className="w-24"
+                  className="w-20 sm:w-24 transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   上一页
                 </Button>
-                <div className="flex items-center gap-2 px-6 py-2 rounded-lg bg-slate-100 dark:bg-slate-800">
-                  <span className="text-sm text-slate-600 dark:text-slate-400">第</span>
-                  <span className="text-lg font-semibold text-slate-900 dark:text-slate-100">{page}</span>
-                  <span className="text-sm text-slate-600 dark:text-slate-400">/ {totalPages}</span>
-                  <span className="text-sm text-slate-600 dark:text-slate-400">页</span>
+                <div className="flex items-center gap-2 px-4 sm:px-6 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                  <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">第</span>
+                  <span className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100">{page}</span>
+                  <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">/ {totalPages}</span>
+                  <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">页</span>
                 </div>
                 <Button
                   variant="outline"
                   disabled={page >= totalPages}
                   onClick={() => setPage(p => p + 1)}
-                  className="w-24"
+                  className="w-20 sm:w-24 transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   下一页
                 </Button>

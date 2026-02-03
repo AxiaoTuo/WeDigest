@@ -160,6 +160,7 @@ export default function AppPage() {
             onComplete: (result, id) => {
               toast.success('摘要生成成功')
               setStreamingCompleteId(id)
+              setIsLoading(false)
             },
             onError: (error) => {
               toast.error(error || 'AI 总结失败')
@@ -215,62 +216,62 @@ export default function AppPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
-      <nav className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push('/')}>
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
+      <nav className="border-b border-slate-200/50 dark:border-slate-700/50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-50">
+        <div className="container mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
+          <div className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-80" onClick={() => router.push('/')}>
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg">
               <BookOpen className="h-5 w-5 text-white" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">WeDigest</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">WeDigest</h1>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" onClick={() => router.push('/')} className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Button variant="ghost" onClick={() => router.push('/')} className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 px-3">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              返回首页
+              <span className="hidden sm:inline">返回首页</span>
             </Button>
-            <Button variant="ghost" onClick={() => router.push('/history')} className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
+            <Button variant="ghost" onClick={() => router.push('/history')} className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 px-3">
               <History className="mr-2 h-4 w-4" />
-              历史记录
+              <span className="hidden sm:inline">历史记录</span>
             </Button>
-            <Button variant="ghost" onClick={() => router.push('/templates')} className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
+            <Button variant="ghost" onClick={() => router.push('/templates')} className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 px-3">
               <Wand2 className="mr-2 h-4 w-4" />
-              模板库
+              <span className="hidden sm:inline">模板库</span>
             </Button>
-            <Button variant="ghost" onClick={() => router.push('/settings')} className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
+            <Button variant="ghost" onClick={() => router.push('/settings')} className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 px-3">
               <Settings className="mr-2 h-4 w-4" />
-              设置
+              <span className="hidden sm:inline">设置</span>
             </Button>
             <ThemeToggle />
           </div>
         </div>
       </nav>
 
-      <main className="container mx-auto max-w-4xl px-6 py-16">
-        <div className="mb-8">
+      <main className="container mx-auto max-w-4xl px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
+        <div className="mb-6 sm:mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
-              <Sparkles className="h-6 w-6 text-white" />
+            <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+              <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
             </div>
             <div>
-              <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">生成深度研报</h2>
-              <p className="text-slate-600 dark:text-slate-400">输入文章链接，AI 自动生成架构师视角的学习笔记</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">生成深度研报</h2>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">输入文章链接，AI 自动生成架构师视角的学习笔记</p>
             </div>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 mb-8">
           {/* 输入区域 */}
-          <Card className="border-2 border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm shadow-xl">
+          <Card className="border-slate-200/50 dark:border-slate-700/50 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-slate-100">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-slate-900 dark:text-slate-100">
                 <Zap className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                 文章链接
               </CardTitle>
-              <CardDescription className="text-slate-600 dark:text-slate-400">
+              <CardDescription className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
                 支持微信公众号文章，自动抓取并生成深度研报
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="url" className="text-sm font-medium text-slate-700 dark:text-slate-300">文章链接</Label>
                 <Input
@@ -279,22 +280,22 @@ export default function AppPage() {
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && !isProcessing && handleFetch()}
-                  className="h-12 text-base"
+                  className="h-10 sm:h-12 text-base transition-colors duration-200"
                   disabled={isProcessing}
                 />
               </div>
 
               <Tabs defaultValue="provider" className="w-full">
-                <TabsList className="grid w-full grid-cols-4 bg-slate-100 dark:bg-slate-800">
-                  <TabsTrigger value="provider" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm">AI 供应商</TabsTrigger>
-                  <TabsTrigger value="template" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm">Prompt 模板</TabsTrigger>
-                  <TabsTrigger value="compare" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm">对比模式</TabsTrigger>
-                  <TabsTrigger value="style" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm">输出设置</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 bg-slate-100 dark:bg-slate-800">
+                  <TabsTrigger value="provider" className="text-xs sm:text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm">AI 供应商</TabsTrigger>
+                  <TabsTrigger value="template" className="text-xs sm:text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm">Prompt 模板</TabsTrigger>
+                  <TabsTrigger value="compare" className="text-xs sm:text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm">对比模式</TabsTrigger>
+                  <TabsTrigger value="style" className="text-xs sm:text-sm data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm">输出设置</TabsTrigger>
                 </TabsList>
-                <TabsContent value="provider" className="space-y-2 mt-4">
+                <TabsContent value="provider" className="space-y-2 mt-3 sm:mt-4">
                   <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">选择 AI 供应商</Label>
                   <Select value={selectedProvider} onValueChange={(v) => setSelectedProvider(v as AIProviderType)} disabled={isProcessing}>
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger className="h-10 sm:h-12 transition-colors duration-200">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -304,10 +305,10 @@ export default function AppPage() {
                     </SelectContent>
                   </Select>
                 </TabsContent>
-                <TabsContent value="template" className="space-y-2 mt-4">
+                <TabsContent value="template" className="space-y-2 mt-3 sm:mt-4">
                   <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">选择 Prompt 模板</Label>
                   <Select value={selectedTemplate || '__default__'} onValueChange={setSelectedTemplate} disabled={isProcessing}>
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger className="h-10 sm:h-12 transition-colors duration-200">
                       <SelectValue placeholder="使用默认模板" />
                     </SelectTrigger>
                     <SelectContent>
@@ -328,7 +329,7 @@ export default function AppPage() {
                     </p>
                   )}
                 </TabsContent>
-                <TabsContent value="compare" className="space-y-4 mt-4">
+                <TabsContent value="compare" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
                   <div className="space-y-2">
                     <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">启用多模型对比</Label>
                     <div className="flex items-center gap-2 p-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800">
@@ -381,7 +382,7 @@ export default function AppPage() {
                     </div>
                   )}
                 </TabsContent>
-                <TabsContent value="style" className="space-y-4 mt-4">
+                <TabsContent value="style" className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
                   <div className="space-y-2">
                     <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">输出语言</Label>
                     <Select
@@ -389,7 +390,7 @@ export default function AppPage() {
                       onValueChange={(v) => setSummaryOptions({ ...summaryOptions, language: v as 'zh' | 'en' })}
                       disabled={isProcessing}
                     >
-                      <SelectTrigger className="h-12">
+                      <SelectTrigger className="h-10 sm:h-12 transition-colors duration-200">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -402,7 +403,7 @@ export default function AppPage() {
               </Tabs>
 
               {/* 流式输出开关 */}
-              <div className="flex items-center justify-between p-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 transition-colors duration-200">
                 <div className="flex items-center gap-2">
                   <Wand2 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
                   <Label htmlFor="streaming" className="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
@@ -419,15 +420,15 @@ export default function AppPage() {
 
               {!isProcessing ? (
                 <Button
-                  className="w-full h-12 text-base bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all"
+                  className="w-full h-10 sm:h-12 text-sm sm:text-base bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 transition-all duration-200"
                   onClick={handleFetch}
                 >
                   {useComparison ? '开始对比' : '生成深度研报'}
-                  <ArrowLeft className="ml-2 h-5 w-5 rotate-180" />
+                  <ArrowLeft className="ml-2 h-4 w-4 sm:h-5 sm:w-5 rotate-180" />
                 </Button>
               ) : (
                 <Button
-                  className="w-full h-12 text-base bg-red-600 hover:bg-red-700 shadow-lg hover:shadow-xl transition-all"
+                  className="w-full h-10 sm:h-12 text-sm sm:text-base bg-red-600 hover:bg-red-700 shadow-lg hover:shadow-xl transition-all duration-200"
                   onClick={handleCancel}
                 >
                   取消生成
@@ -437,32 +438,32 @@ export default function AppPage() {
           </Card>
 
           {/* 实时输出区域 */}
-          <Card className="border-2 border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm shadow-xl flex flex-col">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center justify-between text-slate-900 dark:text-slate-100">
-                <span className="flex items-center gap-2">
-                  {isStreaming ? (
-                    <>
-                      <Loader2 className="h-5 w-5 text-indigo-600 dark:text-indigo-400 animate-spin" />
-                      正在生成中...
-                    </>
-                  ) : streamingCompleteId ? (
-                    <>
-                      <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
-                      生成完成
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-                      预览区域
-                    </>
-                  )}
-                </span>
+          <Card className="border-slate-200/50 dark:border-slate-700/50 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md shadow-lg flex flex-col min-h-[400px]">
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="flex items-center justify-between text-sm sm:text-base text-slate-900 dark:text-slate-100">
+                 <span className="flex items-center gap-2">
+                   {isStreaming ? (
+                     <>
+                       <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 dark:text-indigo-400 animate-spin" />
+                       正在生成中...
+                     </>
+                   ) : streamingCompleteId ? (
+                     <>
+                       <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" />
+                       生成完成
+                     </>
+                   ) : (
+                     <>
+                       <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 dark:text-indigo-400" />
+                       预览区域
+                     </>
+                   )}
+                 </span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 overflow-hidden">
+            <CardContent className="flex-1 overflow-hidden px-4 sm:px-6">
               {isStreaming || streamedContent ? (
-                <div className="h-full overflow-y-auto prose prose-slate dark:prose-invert max-w-none text-sm">
+                <div className="h-full overflow-y-auto prose prose-slate dark:prose-invert max-w-none text-xs sm:text-sm">
                   <div className="flex items-center gap-2 mb-3 text-indigo-600 dark:text-indigo-400">
                     <div className="h-2 w-2 rounded-full bg-indigo-600 dark:bg-indigo-400 animate-pulse" />
                     <span className="text-xs font-medium">AI 实时输出</span>
@@ -474,8 +475,8 @@ export default function AppPage() {
               ) : (
                 <div className="h-full flex items-center justify-center text-slate-400 dark:text-slate-600">
                   <div className="text-center">
-                    <Sparkles className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <p className="text-sm">AI 生成的内容将实时显示在这里</p>
+                    <Sparkles className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-3 opacity-50" />
+                    <p className="text-xs sm:text-sm">AI 生成的内容将实时显示在这里</p>
                   </div>
                 </div>
               )}
@@ -484,12 +485,12 @@ export default function AppPage() {
         </div>
 
         <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/50 dark:to-purple-950/50 border-indigo-200 dark:border-indigo-800">
-          <CardContent className="p-6">
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+          <CardContent className="p-4 sm:p-6">
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4 flex items-center gap-2 text-base sm:text-lg">
               <Globe className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
               支持格式
             </h3>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-slate-600 dark:text-slate-400">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               <div className="flex items-center gap-2">
                 <div className="h-2 w-2 rounded-full bg-indigo-500 dark:bg-indigo-400" />
                 <span>微信公众号文章</span>

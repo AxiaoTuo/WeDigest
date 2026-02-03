@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || ''
     const provider = searchParams.get('provider')
     const favorite = searchParams.get('favorite')
+    const tags = searchParams.get('tags')
     const startDate = searchParams.get('startDate')
     const endDate = searchParams.get('endDate')
     const sortBy = searchParams.get('sortBy') || 'createdAt'
@@ -47,6 +48,16 @@ export async function GET(request: NextRequest) {
       where.isFavorite = true
     } else if (favorite === 'false') {
       where.isFavorite = false
+    }
+
+    // 标签筛选
+    if (tags) {
+      const tagList = tags.split(',').map(t => t.trim()).filter(Boolean)
+      if (tagList.length > 0) {
+        where.keywords = {
+          hasSome: tagList
+        }
+      }
     }
 
     // 日期范围筛选

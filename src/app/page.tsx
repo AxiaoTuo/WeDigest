@@ -151,7 +151,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="text-center mb-16">
+          {/* <div className="text-center mb-16">
             <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-8">用户数据</h3>
             <div className="grid md:grid-cols-3 gap-8">
               {stats.map((stat, index) => (
@@ -166,7 +166,7 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
         </section>
 
         <section className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">

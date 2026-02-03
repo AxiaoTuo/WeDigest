@@ -66,8 +66,8 @@ function ResultContent() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-purple-950">
-        <nav className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
-          <div className="container mx-auto flex items-center justify-between px-4 py-4">
+        <nav className="border-b border-slate-200/50 dark:border-slate-700/50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-50">
+          <div className="container mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
             <Button variant="ghost" disabled className="opacity-50">
               <ArrowLeft className="mr-2 h-4 w-4" />
               返回
@@ -88,8 +88,8 @@ function ResultContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-purple-950">
-      <nav className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
+      <nav className="border-b border-slate-200/50 dark:border-slate-700/50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-50">
+        <div className="container mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
           <Button variant="ghost" onClick={() => router.back()} className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
             <ArrowLeft className="mr-2 h-4 w-4" />
             返回
@@ -130,15 +130,15 @@ function ResultContent() {
         </div>
       </nav>
 
-      <main className="container mx-auto max-w-5xl px-4 py-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">{detail.articleTitle}</h1>
-          <div className="flex flex-wrap gap-2 items-center text-sm text-gray-600 dark:text-slate-400">
+        <main className="container mx-auto max-w-5xl px-4 sm:px-6 py-6 sm:py-8">
+        <div className="mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">{detail.articleTitle}</h1>
+          <div className="flex flex-wrap gap-2 items-center text-xs sm:text-sm text-gray-600 dark:text-slate-400">
             {detail.articleAuthor && <span>作者: {detail.articleAuthor}</span>}
             <span>使用: {detail.provider.toUpperCase()}</span>
             <span>时间: {new Date(detail.createdAt).toLocaleString()}</span>
           </div>
-          <div className="flex flex-wrap gap-1 mt-2">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
             {detail.keywords.map((keyword: string) => (
               <Badge key={keyword} variant="secondary" className="bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400">{keyword}</Badge>
             ))}

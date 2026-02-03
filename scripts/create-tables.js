@@ -61,6 +61,60 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS "Summary_userId_createdAt_idx" ON "Summary"("userId", "createdAt");
 `)
 
+// 添加缺失的列到 Summary 表
+try {
+  db.exec(`ALTER TABLE "Summary" ADD COLUMN "isFavorite" BOOLEAN DEFAULT 0;`)
+} catch (e) {
+}
+
+try {
+  db.exec(`ALTER TABLE "Summary" ADD COLUMN "baseUrl" TEXT;`)
+} catch (e) {
+}
+
+try {
+  db.exec(`ALTER TABLE "Summary" ADD COLUMN "modelName" TEXT;`)
+} catch (e) {
+}
+
+// 添加缺失的列到 ApiKey 表
+try {
+  db.exec(`ALTER TABLE "ApiKey" ADD COLUMN "baseUrl" TEXT;`)
+} catch (e) {
+}
+
+try {
+  db.exec(`ALTER TABLE "ApiKey" ADD COLUMN "modelName" TEXT;`)
+} catch (e) {
+}
+
+// 创建 PromptTemplate 表
+db.exec(`
+  CREATE TABLE IF NOT EXISTS "PromptTemplate" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "category" TEXT NOT NULL DEFAULT 'custom',
+    "prompt" TEXT NOT NULL,
+    "variables" TEXT NOT NULL DEFAULT '[]',
+    "isSystem" BOOLEAN NOT NULL DEFAULT 0,
+    "isFavorite" BOOLEAN NOT NULL DEFAULT 0,
+    "usageCount" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE
+  );
+`)
+
+// 创建 PromptTemplate 索引
+db.exec(`
+  CREATE INDEX IF NOT EXISTS "PromptTemplate_userId_category_idx" ON "PromptTemplate"("userId", "category");
+`)
+db.exec(`
+  CREATE INDEX IF NOT EXISTS "PromptTemplate_userId_isFavorite_idx" ON "PromptTemplate"("userId", "isFavorite");
+`)
+
 // 创建 _prisma_migrations 表（Prisma 需要）
 db.exec(`
   CREATE TABLE IF NOT EXISTS "_prisma_migrations" (
