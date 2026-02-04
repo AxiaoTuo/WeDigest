@@ -27,7 +27,7 @@ COPY . .
 # Set build environment variables
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-ENV PUPPETEER_SKIP_DOWNLOAD=true
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 # Generate Prisma Client and build application
 RUN npx prisma generate
@@ -44,27 +44,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Install runtime dependencies for Chromium (for @sparticuz/chromium)
+# Install runtime dependencies (minimal set for Next.js + @sparticuz/chromium)
 RUN apk add --no-cache \
     ca-certificates \
-    fonts-liberation \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libatspi2.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libdrm2 \
-    libgbm1 \
-    libgtk-3-0 \
-    libnss3 \
-    libwayland-client0 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxfixes3 \
-    libxkbcommon0 \
-    libxrandr2 \
-    xdg-utils \
+    nss \
+    wget \
+    libc6-compat \
     && rm -rf /var/cache/apk/*
 
 # Create a non-root user
@@ -79,15 +64,23 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/node_modules/better-sqlite3 ./node_modules/better-sqlite3
+
+# Copy @sparticuz/chromium and puppeteer-core with their dependencies
+COPY --from=builder /app/node_modules/@sparticuz ./node_modules/@sparticuz
+COPY --from=builder /app/node_modules/puppeteer-core ./node_modules/puppeteer-core
+COPY --from=builder /app/node_modules/puppeteer-* ./node_modules/
 
 # Copy standalone output
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Create data directory with proper permissions
-RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
+# Create data and cache directories with proper permissions
+USER root
+RUN mkdir -p /app/data /app/.cache/chromium /app/tmp && \
+    chown -R nextjs:nodejs /app/data /app/.cache /app/tmp
 
-# Switch to non-root user
+# Set permissions for nextjs user
 USER nextjs
 
 # Expose port
@@ -95,14 +88,19 @@ EXPOSE 3000
 
 # Set environment variables
 ENV DATABASE_URL="file:/app/data/dev.db"
+ENV PUPPETEER_EXECUTABLE_PATH=/app/node_modules/@sparticuz/chromium/chromium.br
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
 # Startup script
+USER root
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+USER nextjs
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["node", "server.js"]
