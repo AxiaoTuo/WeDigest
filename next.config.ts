@@ -22,6 +22,12 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
 
+  // Turbopack configuration (Next.js 16+)
+  turbopack: {
+    // Empty config to enable Turbopack with default settings
+    // This silences the warning about webpack config
+  },
+
   // Experimental features
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
@@ -30,7 +36,7 @@ const nextConfig: NextConfig = {
   // Standalone output for Docker deployment
   output: 'standalone',
 
-  // Webpack configuration for better performance
+  // Webpack configuration (kept for backwards compatibility, ignored when using Turbopack)
   webpack: (config, { isServer }) => {
     // Optimize package imports
     if (!isServer) {
