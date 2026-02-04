@@ -6,8 +6,9 @@ RUN apk add --no-cache libc6-compat python3 make g++ openssl
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files and Prisma schema first
 COPY package.json package-lock.json* ./
+COPY prisma ./prisma/
 
 # Install dependencies
 RUN npm ci
@@ -22,6 +23,8 @@ WORKDIR /app
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
+COPY prisma ./prisma/
+COPY package.json package-lock.json* ./
 COPY . .
 
 # Set build environment variables
