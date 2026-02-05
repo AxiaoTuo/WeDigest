@@ -2,13 +2,17 @@
 # Stage 1: Dependencies
 # ========================================
 FROM node:20-alpine AS deps
-RUN apk add --no-cache libc6-compat python3 make g++ openssl
+RUN apk add --no-cache libc6-compat python3 make g++ openssl curl
 
 WORKDIR /app
 
 # Copy package files and Prisma schema first
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma/
+
+# Set environment to skip Chromium download during build
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV CHROMIUM_SKIP_DOWNLOAD=true
 
 # Install dependencies
 RUN npm ci
@@ -17,7 +21,7 @@ RUN npm ci
 # Stage 2: Builder
 # ========================================
 FROM node:20-alpine AS builder
-RUN apk add --no-cache libc6-compat python3 make g++ openssl
+RUN apk add --no-cache libc6-compat python3 make g++ openssl curl
 
 WORKDIR /app
 
@@ -31,6 +35,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV CHROMIUM_SKIP_DOWNLOAD=true
 
 # Generate Prisma Client and build application
 RUN npx prisma generate
@@ -46,8 +51,10 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV CHROMIUM_SKIP_DOWNLOAD=true
 
-# Install runtime dependencies (minimal set for Next.js + @sparticuz/chromium)
+# Install runtime dependencies
 RUN apk add --no-cache \
     ca-certificates \
     nss \
@@ -83,6 +90,10 @@ USER root
 RUN mkdir -p /app/data /app/.cache/chromium /app/tmp && \
     chown -R nextjs:nodejs /app/data /app/.cache /app/tmp
 
+# Download Chromium at runtime instead (more reliable)
+RUN su - nextjs -c "npx @puppeteer/browsers install chrome@stable --path /app/.cache/chromium" || \
+    echo "Chromium download skipped, will use bundled version"
+
 # Set permissions for nextjs user
 USER nextjs
 
@@ -91,8 +102,6 @@ EXPOSE 3000
 
 # Set environment variables
 ENV DATABASE_URL="file:/app/data/dev.db"
-ENV PUPPETEER_EXECUTABLE_PATH=/app/node_modules/@sparticuz/chromium/chromium.br
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
